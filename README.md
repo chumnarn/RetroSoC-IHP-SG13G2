@@ -1,0 +1,368 @@
+# retroSoC
+
+[![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-d4a72c?style=flat-square&labelColor=3b301a&logo=github&logoColor=f6d365)](LICENSE)
+[![RTL](https://img.shields.io/badge/RTL-SystemVerilog-d4a72c?style=flat-square&labelColor=3b301a&logo=devbox&logoColor=f6d365)](rtl)
+[![ISA](https://img.shields.io/badge/ISA-RV32IM-d4a72c?style=flat-square&labelColor=3b301a&logo=riscv&logoColor=f6d365)](configs/ci/ihp130.mk)
+[![RISC-V GCC](https://img.shields.io/badge/RISC--V%20GCC-2025.05.01-d4a72c?style=flat-square&labelColor=3b301a&logo=c&logoColor=f6d365)](dependencies/dependencies.lock.json)<br>
+[![IHP130 regression](https://img.shields.io/github/actions/workflow/status/retroSoC/retroSoC/regression-ihp130.yml?branch=main&style=flat-square&label=IHP130&labelColor=3b301a&logo=githubactions&logoColor=f6d365)](https://github.com/retroSoC/retroSoC/actions/workflows/regression-ihp130.yml)
+[![GF180 regression](https://img.shields.io/github/actions/workflow/status/retroSoC/retroSoC/regression-gf180.yml?branch=main&style=flat-square&label=GF180&labelColor=3b301a&logo=githubactions&logoColor=f6d365)](https://github.com/retroSoC/retroSoC/actions/workflows/regression-gf180.yml)
+[![ICS55 regression](https://img.shields.io/github/actions/workflow/status/retroSoC/retroSoC/regression-ics55.yml?branch=main&style=flat-square&label=ICS55&labelColor=3b301a&logo=githubactions&logoColor=f6d365)](https://github.com/retroSoC/retroSoC/actions/workflows/regression-ics55.yml)
+[![SKY130 regression](https://img.shields.io/github/actions/workflow/status/retroSoC/retroSoC/regression-sky130.yml?branch=main&style=flat-square&label=SKY130&labelColor=3b301a&logo=githubactions&logoColor=f6d365)](https://github.com/retroSoC/retroSoC/actions/workflows/regression-sky130.yml)
+[![Quality](https://img.shields.io/github/actions/workflow/status/retroSoC/retroSoC/quality.yml?branch=main&style=flat-square&label=Quality&labelColor=3b301a&logo=githubactions&logoColor=f6d365)](https://github.com/retroSoC/retroSoC/actions/workflows/quality.yml)
+[![Nightly](https://img.shields.io/github/actions/workflow/status/retroSoC/retroSoC/nightly.yml?branch=main&style=flat-square&label=Nightly&labelColor=3b301a&logo=githubactions&logoColor=f6d365)](https://github.com/retroSoC/retroSoC/actions/workflows/nightly.yml)
+
+retroSoC is a fully open-source RISC-V SoC project. The repository brings together
+SystemVerilog RTL, a freestanding embedded C SDK and applications, simulation, synthesis,
+static timing analysis, reproducible dependencies, and release packaging. It is licensed
+under the [Mulan Permissive Software License, Version 2](LICENSE).
+
+## Highlights
+
+- A fixed asymmetric dual-core Mini product: Hazard3 is the LP management hart
+  and generated dual-issue RV64IMAFDC VexiiRiscv is the HP application hart.
+  The C0-C3 selectable cores remain only in the explicit Mini MPW profile.
+- A product [LP/HP architecture](docs/lp-hp-architecture.md) with independent
+  AON, LP, HP, PCLK, memory, audio, pixel, JTAG, and ULPI clock/reset contracts,
+  a native AXI64 HP data plane, fixed EXT-L/EXT-H slots,
+  HP CLINT/PLIC, UART1, mailbox, locked OpenSBI/Linux/Buildroot inputs, and a
+  CRC-checked direct-Linux boot bundle. Linux boot and performance evidence are
+  release gates, not yet baseline CI claims.
+- A documented [Tiny/Mini/Std/Pro product direction](docs/soc-family-positioning.md)
+  anchored by Mini and a trusted Hazard3 management model. The higher Linux,
+  graphics, AI, and RV64 configurations are roadmap targets, not supported
+  build profiles.
+- A standard five-pad JTAG Debug Transport Module for the Hazard3 management
+  core, with a reproducible Verilator, OpenOCD, and GDB acceptance flow.
+- Configurable GF180, SKY130, IHP130, and ICS55 implementation targets with
+  open-source CI coverage.
+- A memory-mapped peripheral subsystem with GPIO, UART,
+  [dual general timers](docs/ip/timer.md),
+  [PWM V2](rtl/managed/clusterip/pwm/doc/datasheet.md),
+  [dual I2C controllers](docs/ip/i2c.md), I2S,
+  [bidirectional PS/2](docs/ip/ps2.md),
+  WS2812, SPI/QSPI, SDIO, PSRAM/[OPI-PSRAM](docs/ip/opipsram.md), SDRAM, DMA, LCD, RTC, an
+  independent-clock window watchdog, CRC, and a
+  management-only RNG entropy controller. The P5 [GA2D](docs/ip/ga2d.md) is an
+  ownership-routed, PCLK-controlled, direct single-job private-AXI64 2D engine
+  with FILL, COPY, bit-exact CONVERT, opaque alpha BLEND, A8 fixed-color
+  foreground masks, and exact equal background/destination in-place composition.
+  Color surfaces are RGB565, RGB888, XRGB8888, and ARGB8888; A8 is BLEND
+  foreground-only. It retains pitch, byte-edge, snapshot, and IRQ support at
+  the existing APB4_GA2D window. It does not provide transparent-background or
+  premultiplied-alpha modes, a scaler or renderer, descriptors/rings/queues,
+  cache coherency, or a Linux graphics driver.
+  The current deterministic RNG integration source is
+  explicitly unqualified and intended only for diagnostics until a PDK-qualified entropy source is integrated.
+  support. Available interfaces depend on the selected SoC configuration.
+- A standalone RISC-V runtime, HAL, board support, middleware, and `benchmark`, `bringup`,
+  `coremark`, `debug`, and `shell` applications.
+- Open-source behavioral simulation with Icarus Verilog and Verilator,
+  synthesis with Yosys, netlist simulation with Icarus Verilog, and timing
+  analysis with OpenSTA.
+- Read-only ARCHINFO ABI discovery for build/configuration provenance, SoC
+  topology, technology capabilities, and lifecycle-gated device identity.
+- Checksum-verified dependency and toolchain locks, structured flow results, warning
+  baselines, metrics collection, SBOM generation, and checksummed release packages.
+
+## Repository Layout
+
+**Mini and Tiny have independent integration flows.** Mini combines a
+low-power Hazard3 management hart and a VexiiRiscv application hart; its separate
+MPW profile retains selectable-core compatibility. [Tiny](docs/ip/tiny-soc.md)
+is a wired MCU with one Hazard3 RV32IMC hart, 128 KiB SRAM, AXI4/APB4 and no
+wireless IP. Tiny first targets IHP130; [Std and Pro](docs/soc-family-positioning.md)
+remain roadmap products. Qualification is determined by each profile's retained
+verification and physical reports.
+
+The [Tiny Gen1 datasheet](publications/datasheets/tiny/README.md) provides the
+independent product, register, software and evidence reference using the
+established publication layout. Its build does not require Mini's HP or
+multimedia inputs.
+
+| Path | Contents |
+| --- | --- |
+| [`rtl/`](rtl) | SoC RTL, CPU integration, peripherals, interfaces, testbenches, and technology wrappers. |
+| [`dependencies/`](dependencies) | Locked external repositories, archives, toolchains, and environment inputs. |
+| [`crt/`](crt) | Freestanding RISC-V startup code, linker scripts, runtime library, core services, and HAL headers. |
+| [`app/`](app) | Applications, board support, media, middleware, networking, ports, and benchmarks. |
+| [`configs/`](configs) | Versioned build profiles for CI, nightly, and cluster flows. |
+| [`physical/`](physical) | Physical-design entry points, managed PDK integration, and smoke synthesis/STA flows. |
+| [`scripts/`](scripts) and [`quality/`](quality) | Build helpers, regression orchestration, checks, warning baselines, and metric policy. |
+| [`.github/`](.github) | GitHub automation, Dependabot configuration, and CI/release workflows; see [`GUIDE.md`](.github/GUIDE.md). |
+| [`docs/`](docs) | Engineering workflow and release-process documentation. |
+| [`publications/`](publications) | Manually built Typst datasheets and versioned publication media. |
+
+## Supported Configurations
+
+The committed profiles are the supported starting points. They select an ISA,
+PDK, application, linker layout, and optional features as one reproducible
+configuration. Product profiles set `MINI_MODE=PRODUCT`, fix both CPU harts,
+and report zero selectable user cores. `configs/cluster/mini-mpw.mk` is the
+separate `MINI_MODE=MPW` compatibility profile for C0-C3.
+`SRAM_SIZE_KIB` selects a generated 4/16/32/64/128 KiB native-AXI4 on-chip
+SRAM window. The IHP130, GF180, and SKY130 CI profiles enable a 32 KiB macro-backed
+window; committed ICS55 regression profiles deliberately keep SRAM and PLL
+disabled. `configs/local/ics55.example.mk` documents the ignored local profile
+used with commercial 32 KiB SRAM and PLL simulation models.
+
+| Profile | ISA | Application | Coverage |
+| --- | --- | --- | --- |
+| [`configs/ci/ihp130.mk`](configs/ci/ihp130.mk) | RV32IM | `bringup` | Firmware and behavioral regression with a 32 KiB IHP SRAM; local full-flow commands also support Yosys, netlist Icarus, and OpenSTA. |
+| [`configs/ci/gf180.mk`](configs/ci/gf180.mk) | RV32IM | `bringup` | Firmware and behavioral regression with a 32 KiB SRAM assembled from GF180 macros; local full-flow commands support synthesis and timing. |
+| [`configs/ci/ics55.mk`](configs/ci/ics55.mk) | RV32IM | `bringup` | Firmware and behavioral regression without a public SRAM macro; local full-flow commands support synthesis and core timing. |
+| [`configs/ci/sky130.mk`](configs/ci/sky130.mk) | RV32IM | `bringup` | Firmware and behavioral regression with a 32 KiB OpenRAM SRAM; local full-flow commands support synthesis and timing. |
+| [`configs/ci/ihp130-shell.mk`](configs/ci/ihp130-shell.mk) | RV32IM | `shell` | Pull-request firmware build with CSR support enabled. |
+| [`configs/ci/ihp130-debug.mk`](configs/ci/ihp130-debug.mk) | RV32IM | `debug` | Verilator remote-bitbang acceptance of the Hazard3 JTAG DTM, Debug Module, OpenOCD, and GDB. |
+| [`configs/ci/ihp130-hp.mk`](configs/ci/ihp130-hp.mk) | LP RV32IM / HP RV64IMAFDC | `hp_boot` | Linux image/bundle flow and HP RTL validation on the fixed product topology. |
+| [`configs/ci/ihp130-rtthread.mk`](configs/ci/ihp130-rtthread.mk) | LP RV32IM / HP RV64IMAFDC | `hp_boot` | Locked RT-Thread v5.3.0 M-mode kernel/platform acceptance on HP hart 1. |
+| [`configs/benchmark/ihp130-hazard3-coremark.mk`](configs/benchmark/ihp130-hazard3-coremark.mk) | LP RV32IM / HP RV64IMAFDC+Zicbom | `coremark` | Fixed four-iteration LP SRAM CoreMark measurement with the product HP core present. |
+| [`configs/cluster/ics55.mk`](configs/cluster/ics55.mk) | LP RV32IM / HP RV64IMAFDC+Zicbom | `bringup` | Site profile with PLL/SRAM intentionally disabled for regression compatibility. |
+| [`configs/cluster/mini-mpw.mk`](configs/cluster/mini-mpw.mk) | RV32IM | `bringup` | Legacy MPW C0-C3/user-IP selection profile; not part of the Mini product ABI. |
+
+CI Verilator firmware simulations explicitly select the `ci_smoke`
+application, which checks UART, archinfo APB readback, macro-backed on-chip SRAM,
+the GA2D direct 2D route including CONVERT/BLEND/A8 in-place acceptance, RNG
+fail-closed behavior, and test-status completion without the verbose startup
+report. ARCHINFO checks include its
+ABI and the build/configuration identifiers generated for that variant. The
+IHP130 PR run links this image into the 32 KiB SRAM, explicitly enables the
+fast-flash backend, and allows 360 seconds; Icarus keeps the real serial XPI
+boot-model check. The profiles retain `bringup`
+as their default for manual diagnostics. To run the full report in Verilator,
+use:
+
+```sh
+make CONFIG=configs/ci/ihp130.mk APP=bringup SIMU=VERILATOR SOC_SIM_TIME=300 firmware sim
+
+# Firmware, RTL lint, debug, and behavioral simulation without synthesis/STA
+make regress-rtl
+```
+
+## Prerequisites
+
+The open-source development environment contains the exact Ubuntu 22.04 tool bundles, Python
+quality tools, compiler, formatters, simulators, synthesis, STA, and formal tools used by the
+current regression. It does not contain PDKs, managed RTL, or application archives; those remain
+checkout-local inputs installed and verified through the existing setup targets. Linux x86_64 is
+the supported host for the full native environment. On macOS, use Docker with linux/amd64
+emulation. Nix support is Linux x86_64 only.
+
+Choose one of the following installation methods. Each uses the locked versions in
+[dependencies/dependencies.lock.json](dependencies/dependencies.lock.json) and creates or reuses the local
+cache at .cache/retrosoc/development.
+
+### Nix
+
+Install Nix with flakes enabled, then run the development application from the repository root.
+It builds a Linux FHS environment and invokes the same locked bootstrap script as Docker and the
+manual method.
+
+~~~sh
+nix run .#dev -- make setup-regression
+nix run .#dev -- make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG doctor
+nix run .#dev -- make regress-pr
+~~~
+
+Use nix run .#dev without a command to open an interactive shell. The pinned nixpkgs revision is
+recorded in flake.lock and cross-checked against the dependency lock.
+
+### Docker
+
+Build the local image once. The base image is immutable by digest and the image bootstrap installs
+the same locked tools into an image-local cache. Mount the checkout so generated files, PDKs, and
+managed sources remain on the host volume.
+
+~~~sh
+docker build --tag retrosoc-dev --file docker/Dockerfile .
+docker run --rm --init --platform linux/amd64 --user "$(id -u):$(id -g)" -it \
+  -v "$PWD:/workspace/retrosoc" retrosoc-dev \
+  make setup-regression
+docker run --rm --init --platform linux/amd64 --user "$(id -u):$(id -g)" -it \
+  -v "$PWD:/workspace/retrosoc" retrosoc-dev \
+  make regress-pr
+~~~
+
+### Manual Installation
+
+On Ubuntu 22.04, install the host packages used by CI, then run the shared bootstrap script. It
+downloads only checksum-verified tool bundles and Python packages pinned by the repository.
+
+~~~sh
+sudo apt-get update
+sudo apt-get install --no-install-recommends --yes \
+  bzip2 ca-certificates ccache clang-format-14 g++ git libfl2 libgoogle-perftools4 \
+  libunwind8 make mold numactl python3 python3-pip python3-venv xz-utils zlib1g
+python3 scripts/development_environment.py bootstrap
+source .cache/retrosoc/development/activate.sh
+make setup-regression
+make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG doctor
+~~~
+
+Run python3 scripts/development_environment.py check after a lock update or when diagnosing a
+local tool issue. The lock file also pins external RTL, PDK, benchmark, and application sources.
+Their setup scripts verify full Git revisions or SHA-256 checksums before use. See the
+[engineering workflow](docs/engineering.md#reproducible-inputs) for the dependency update
+procedure.
+
+## Quick Start
+
+Start with the CI-verified IHP130 `bringup` profile. `setup` retrieves the pinned
+source dependencies, and `doctor` reports any missing local executables or setup inputs.
+
+```sh
+make CONFIG=configs/ci/ihp130.mk setup
+make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG doctor
+make CONFIG=configs/ci/ihp130.mk firmware
+make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG sim
+```
+
+Select the interactive shell application without editing source files:
+
+```sh
+make CONFIG=configs/ci/ihp130-shell.mk firmware
+```
+
+### Build and simulate Tiny
+
+```sh
+make CONFIG=configs/ci/ihp130-tiny.mk setup
+make CONFIG=configs/ci/ihp130-tiny.mk doctor
+make CONFIG=configs/ci/ihp130-tiny.mk firmware sim
+make CONFIG=configs/ci/ihp130-tiny.mk SIMU=IVERILOG firmware sim
+```
+
+Tiny uses its own source lists and product maps under `rtl/tiny`. Its firmware
+loads into on-chip SRAM without PSRAM/SDRAM initialization. The first release
+uses a fixed 24 MHz clock and disables atomic instructions. Wireless, external
+RAM, HP cores, accelerators and advanced low-power modes remain deferred.
+
+## Configurations and common flows
+
+Start from a [committed profile](configs/README.md). These are selected entry
+points, not the complete profile or application inventory.
+
+| Profile | Purpose |
+| --- | --- |
+| [IHP130 Tiny](configs/ci/ihp130-tiny.mk) | Single-hart wired MCU, 128 KiB SRAM, pin-level Flash boot and automated acceptance. |
+| [IHP130 Mini](configs/ci/ihp130.mk) | Manual bring-up with 32 KiB macro-backed SRAM. |
+| [GF180](configs/ci/gf180.mk) / [SKY130](configs/ci/sky130.mk) | Alternative PDK profiles with 32 KiB macro-backed SRAM. |
+| [ICS55](configs/ci/ics55.mk) | Regression-compatible profile with SRAM and PLL disabled. |
+| [Interactive shell](configs/ci/ihp130-shell.mk) | Shell firmware with CSR support enabled. |
+| [Hazard3 debug](configs/ci/ihp130-debug.mk) | JTAG acceptance using Verilator, OpenOCD, and GDB. |
+| [HP Linux](configs/ci/ihp130-hp.mk) | HP image/bundle flow; outside the supported PR matrix. |
+| [APU LP/HP](configs/ci/ihp130-apu.mk) | Audio and KWS evidence flow with ownership handoff to HP. |
+| [CoreMark](configs/benchmark/ihp130-hazard3-coremark.mk) | Fixed LP SRAM benchmark with the product HP core present. |
+| [Mini MPW](configs/cluster/mini-mpw.mk) | Legacy C0-C3/user-IP compatibility, separate from the product ABI. |
+
+After the corresponding setup, use these common commands:
+
+## Common Flows
+
+All commands use a committed profile. `make config` prints the effective configuration and
+variant identifier; `make help` lists all available targets. Netlist simulation and timing
+analysis consume the Yosys netlist, so run the synthesis command first. The CI-proven netlist
+regression uses the assembly self-test image:
+
+Verilator simulations run for 180 seconds by default. The IHP130 `ci_smoke`
+regression explicitly uses 360 seconds because its LP memory accesses traverse
+the asynchronous data gateway. Set `SOC_SIM_TIME` explicitly only when an
+exploratory local run needs a different limit.
+
+VCS flow commands use `bsub -Is` by default: this includes parse-time Python helpers used to
+calculate the variant and dependency-lock digest, generated-flow Python helpers, VCS, `simv`, and
+Verdi. In a licensed local VCS environment, run without LSF submission using `VCS_USE_LSF=NO`; an
+explicit `VCS_RUNNER` takes precedence when a site-specific queue or wrapper is required:
+
+```sh
+make CONFIG=configs/ci/ihp130.mk SIMU=VCS VCS_USE_LSF=NO sim
+make CONFIG=configs/ci/ihp130.mk SIMU=VCS VCS_RUNNER='bsub -q vcs -Is' sim
+```
+
+```sh
+make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG RTL_SIM_TIMEOUT=5200000 sim-asm
+make CONFIG=configs/ci/ihp130.mk SYNTH=YOSYS synth
+make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG \
+  SIM_FIRMWARE_NAME=retrosoc_asm \
+  RTL_SIM_TIMEOUT=5200000 netsim
+```
+
+| Goal | Command |
+| --- | --- |
+| Icarus behavioral simulation | `make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG sim` |
+| Verilator behavioral simulation | `make CONFIG=configs/ci/ihp130.mk SIMU=VERILATOR sim` |
+| Hazard3 JTAG debug acceptance | `make CONFIG=configs/ci/ihp130-debug.mk SIMU=VERILATOR debug-sim` |
+| Assembly self-test with Icarus | `make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG RTL_SIM_TIMEOUT=5200000 sim-asm` |
+| Yosys synthesis | `make CONFIG=configs/ci/ihp130.mk SYNTH=YOSYS synth` |
+| Icarus netlist simulation after synthesis | `make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG netsim` |
+| OpenSTA core timing analysis after synthesis | `make CONFIG=configs/ci/ihp130.mk STA=OPENSTA sta` |
+| Strict Verilator RTL lint | `make CONFIG=configs/ci/ihp130.mk SIMU=VERILATOR HAVE_SVA=YES check-rtl-lint` |
+| Hazard3 CoreMark quick report | `make CONFIG=configs/benchmark/ihp130-hazard3-coremark.mk SIMU=VERILATOR SOC_SIM_TIME=7200 coremark-report` |
+| Generate the untracked HP core RTL | `make CONFIG=configs/ci/ihp130-hp.mk vexii-generate` |
+| Build and package the HP Linux flash image | `make setup-hp-linux && make CONFIG=configs/ci/ihp130-hp.mk hp-bundle` |
+| IHP130 fast smoke suite | `make regress-smoke` |
+| Pull-request regression suite | `make regress-pr` |
+| Nightly regression suite | `make regress-nightly` |
+| Format C, Makefile, and RTL sources | `make format` |
+| Check C, Makefile, and RTL formatting | `make format-check` |
+| Script and policy checks | `make sw-policy-check sw-host-test` |
+
+`make regress-smoke` builds the IHP130 firmware, compiles the Verilator SVA
+configuration, and runs the Icarus assembly self-test. It runs strict RTL lint
+before those flows and omits synthesis,
+timing, and netlist simulation for fast feedback. `make regress-pr` runs the
+supported IHP130, GF180, ICS55, and SKY130 PR matrices in sequence, including
+slow-corner OpenSTA core timing analysis for each PDK.
+
+GitHub-hosted regression workflows currently pass `--behavioral-only` to avoid
+the unresolved JPEG Yosys memory peak. They retain RTL lint, firmware, Verilator,
+and Icarus behavioral coverage; local `make regress-pr` remains the complete
+synthesis, netlist simulation, and OpenSTA flow.
+
+Build outputs are isolated below `build/<profile>-<YYYY-MM-DD-HH-MM>-<config-hash>/`. Each variant keeps its
+firmware, generated sources, simulator output, synthesis and timing reports, manifest, warning
+analysis, and metrics separate from other configurations. Use `make clean` to remove the
+selected backend, `make clean-all` to remove all build output, and `make purge-cache` to remove
+download and compiler caches.
+
+`BUILD_TIMESTAMP` defaults to the local build-start time. Set it explicitly when separate Make
+commands must reuse one variant:
+
+```sh
+export BUILD_TIMESTAMP=2026-07-21-10-39
+make CONFIG=configs/ci/ihp130.mk firmware
+make CONFIG=configs/ci/ihp130.mk SIMU=IVERILOG sim
+```
+
+## Reproducibility And CI
+
+[`dependencies/dependencies.lock.json`](dependencies/dependencies.lock.json) is the source of truth for
+external repositories, application archives, and Ubuntu 22.04 toolchain bundles. The lock digest
+is part of each build variant, and every download is checksum verified. GitHub Actions pins its
+actions by commit, validates the lock and engineering scripts, and runs pull-request and nightly
+regression matrices.
+
+Every EDA command is recorded with a log and a machine-readable result JSON. The regression
+policy checks warning deltas against committed baselines and collects metrics for later gate
+promotion. Tags matching `v*` produce a flattened SystemVerilog export, source archive, build
+manifest, dependency lock, CycloneDX SBOM, and `SHA256SUMS`. Run `make package` to create the
+same local deliverables under `dist/<variant>/`.
+
+See [`docs/engineering.md`](docs/engineering.md) for supported-flow details, artifact layout,
+warning and metric policy, CI behavior, and release contents.
+
+## Contributing
+
+Contributions are welcome. If you want to improve the RTL, software, verification,
+documentation, or development flows, open an issue or submit a pull request after
+reading [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+- Report vulnerabilities according to [`Security.md`](Security.md).
+- Review retained third-party notices in [`NOTICE`](NOTICE) and
+  [`ATTRIBUTIONS.md`](ATTRIBUTIONS.md).
+- The project is distributed under [Mulan PSL v2](LICENSE).
+
+A big **thank you** goes out to everyone who has contributed to retroSoC:
+
+<a href="https://github.com/retroSoC/retroSoC/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=retroSoC/retroSoC" alt="retroSoC contributors" />
+</a>

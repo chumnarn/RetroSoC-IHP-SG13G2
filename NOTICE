@@ -1,0 +1,27 @@
+# Notice
+
+This repository includes RTL source files that preserve third-party copyright and attribution notices in their original file headers. These notices are reproduced here for clarity and compliance with the attribution requirements of the retained source files.
+
+The following third-party projects or authors are referenced in the RTL source headers currently present in this repository:
+
+- ETH Zurich and University of Bologna: notices are preserved in several RTL files under rtl/managed/clusterip/, rtl/managed/mpw/core/username7/ibex/, and in rtl/tech/tc_clk.sv.
+- PULP Platform HyperBus v0.0.4 at commit 80de8df600edc5d7956a94c9d42f911d6e61efd7: the SHL-0.51 notices and source-file authors are retained in rtl/ip/memory/opipsram_phy.sv, rtl/ip/memory/opipsram_trx.sv, and rtl/tech/tc_opipsram_delay.sv for the adapted OPI PSRAM PHY.
+- Ravenna / PicoRV32 in ASIC: notices are preserved in rtl/ip/peripheral/gpio.sv, rtl/ip/peripheral/timer.sv, and rtl/ip/serial/uart.sv.
+- Hirosh Dabui: the original copyright notice is preserved in rtl/ip/memory/sdram_core.sv.
+- EmbedFire: attribution is preserved in the SPI SD card related files under rtl/ip/storage/.
+- Device simulation models: the models under rtl/model/ preserve their upstream
+  notices, including the Winbond Electronics Corporation notice in the
+  W25Q128JVxIM model.
+- SKY130 OpenRAM SRAM artifact: generated using OpenRAM under BSD-3-Clause and
+  the SkyWater SRAM build-space under Apache-2.0. Both license texts and the
+  exact source revisions are retained in the downloaded artifact manifest.
+
+These notices are included solely to preserve attribution for the retained third-party source material. They do not alter the licensing terms of the retroSoC repository itself, which is distributed under the Mulan PSL v2 license.
+
+## Typst publication tooling
+
+The bytefield, rivet, blockcell and circuiteria drawing packages, and their
+CeTZ 0.3.4, tidy 0.3.0 and oxifmt 0.2.1 runtime dependencies, retain their upstream
+licenses and authorship. See the package/version entries in ATTRIBUTIONS.md and
+the exact Typst-*-LICENSE texts in licenses/. The dependency lock and publication
+manifest identify the archives used for each document build.
