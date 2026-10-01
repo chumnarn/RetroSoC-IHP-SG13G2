@@ -1,0 +1,178 @@
+// Mini PRODUCT architecture overview.
+// Render with: dot -Tsvg docs/mini-soc-block-diagram.dot -o docs/mini-soc-block-diagram.svg
+// Sources of truth: rtl/mini/top and rtl/mini/integration/*.json.
+digraph mini_soc_block_diagram {
+  graph [
+    bgcolor="transparent",
+    compound=true,
+    fontname="Arial",
+    fontsize=18,
+    label="retroSoC Mini Product Architecture",
+    labelloc="t",
+    labeljust="l",
+    nodesep=0.42,
+    rankdir=LR,
+    ranksep=0.72,
+    splines=polyline
+  ];
+
+  node [
+    color="#4B5563",
+    fillcolor="#F8FAFC",
+    fontcolor="#111827",
+    fontname="Arial",
+    fontsize=10,
+    margin="0.14,0.10",
+    penwidth=1.1,
+    shape=box,
+    style="rounded,filled"
+  ];
+  edge [
+    arrowsize=0.7,
+    color="#4B5563",
+    fontcolor="#374151",
+    fontname="Arial",
+    fontsize=8,
+    penwidth=1.2
+  ];
+
+  clocks [
+    fillcolor="#F3F4F6",
+    label="Clock and reset inputs\nREF24, EXT72, audio\nDVP, ULPI, JTAG"
+  ];
+  pads [
+    fillcolor="#F3F4F6",
+    label="Pads and devices\nSDRAM, QPI/OPI shared pads, XPI\nUSB2, SDIO, SPI-SD, GPIO/peripherals"
+  ];
+
+  subgraph cluster_aon {
+    color="#7C3AED";
+    fontname="Arial";
+    label="AON @ REF24";
+    style="rounded";
+
+    aon [
+      fillcolor="#EDE9FE",
+      label="Clock/reset subsystem\nPLL supervisor and clock monitor\nHP lifecycle, pad mode, retained faults"
+    ];
+  }
+
+  subgraph cluster_lp {
+    color="#15803D";
+    fontname="Arial";
+    label="LP control domain";
+    style="rounded";
+
+    hazard3 [
+      fillcolor="#DCFCE7",
+      label="Hazard3 management hart 0\nAHB-Lite + JTAG Debug Module"
+    ];
+    lp_fabric [
+      fillcolor="#DBEAFE",
+      label="32-bit LP control fabric\nroot access policy and fault routing",
+      shape=hexagon
+    ];
+    lp_gateway [
+      fillcolor="#E0F2FE",
+      label="LP -> HP data gateway\nAXI32 -> 64 + async bridge\nbackground / recovery QoS"
+    ];
+    hp_mmio [
+      fillcolor="#E0F2FE",
+      label="HP -> LP MMIO bridge\nAXI64 -> 32 + async bridge"
+    ];
+  }
+
+  subgraph cluster_pclk {
+    color="#A16207";
+    fontname="Arial";
+    label="PCLK register domain";
+    style="rounded";
+
+    apb [
+      fillcolor="#FEF3C7",
+      label="APB4 system + peripheral islands\nSYSCTRL, Resource Controller\nEXT-L/EXT-H, memory/peripheral control"
+    ];
+    io_gateway [
+      fillcolor="#FEF3C7",
+      label="DMA and I/O sub-fabrics\ncentral DMA, USB2, SDIO0/1, SPI-SD\nAXI32 -> 64 + async bridges"
+    ];
+  }
+
+  subgraph cluster_hp {
+    color="#1D4ED8";
+    fontname="Arial";
+    label="HP data domain @ EXT72 / PLL";
+    style="rounded";
+
+    vexii [
+      fillcolor="#DBEAFE",
+      label="VexiiRiscv hart 1\nindependent native AXI64 I-cache / D-cache"
+    ];
+    ext_h [
+      fillcolor="#DBEAFE",
+      label="EXT-H\nAXI64 data master\nfixed range ACL"
+    ];
+    data_plane [
+      fillcolor="#BFDBFE",
+      label="Native AXI64 Data Plane\n9 masters x 6 targets, global ID7\ntarget credits, QoS aging, generated ACL",
+      shape=hexagon
+    ];
+    guards [
+      fillcolor="#FCE7F3",
+      label="Queued target guards\nbounded SLVERR, timeout and isolation"
+    ];
+    sram [
+      fillcolor="#FDE68A",
+      label="32 KiB on-chip SRAM\nnative AXI64 / ID7"
+    ];
+    monitor [
+      fillcolor="#FCE7F3",
+      label="Fabric Monitor @ 0x2000_B000\nsnapshot counters, wait/high-water\ntimeout/isolation, sticky first fault"
+    ];
+  }
+
+  subgraph cluster_memory {
+    color="#B45309";
+    fontname="Arial";
+    label="Stable memory domain";
+    style="rounded";
+
+    memory_cdc [
+      fillcolor="#FFEDD5",
+      label="Four direct HP -> memory AXI64 bridges\nlocal AXI64 -> 32 adaptation"
+    ];
+    memory [
+      fillcolor="#FED7AA",
+      label="Fixed-present frontends\nSDRAM | QPI | OPI/HyperBus | XPI\nQPI/OPI boot-selected, inactive SLVERR"
+    ];
+  }
+
+  clocks -> aon [label="REF24 / EXT72"];
+  aon -> hazard3 [label="LP clock/reset"];
+  aon -> apb [label="PCLK/reset"];
+  aon -> data_plane [label="HP clock/reset\nblock, drain, flush", style=dashed];
+  aon -> memory [label="stable memory clock/reset", style=dashed];
+
+  hazard3 -> lp_fabric [label="AHB -> AXI32"];
+  lp_fabric -> apb [label="LP -> PCLK APB"];
+  lp_fabric -> lp_gateway [label="memory windows"];
+  hp_mmio -> lp_fabric [label="uncached MMIO"];
+
+  vexii -> data_plane [label="I$ / D$ AXI64"];
+  vexii -> hp_mmio [label="MMIO"];
+  io_gateway -> data_plane [label="M2-M4"];
+  lp_gateway -> data_plane [label="M5"];
+  ext_h -> data_plane [label="M7"];
+  apb -> ext_h [label="control / ownership", style=dashed];
+
+  data_plane -> guards [label="five memory targets"];
+  guards -> sram [label="native AXI64"];
+  guards -> memory_cdc [label="SDRAM/QPI/OPI/XPI AXI64"];
+  memory_cdc -> memory [label="AXI32 frontends"];
+  data_plane -> monitor [label="events / fault"];
+  apb -> monitor [label="PCLK -> HP APB"];
+
+  apb -> pads [label="control and peripheral I/O", dir=both];
+  io_gateway -> pads [label="payload", dir=both];
+  memory -> pads [label="memory protocols", dir=both];
+}

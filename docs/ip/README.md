@@ -1,0 +1,52 @@
+# IP Documentation
+
+This directory owns architecture, register ABI, software contract, and
+verification documentation for self-owned retroSoC peripheral IP and platform
+extension interfaces.
+
+- [Tiny Gen1 QFN64](tiny-soc.md) freezes the product/package target, 144 MHz
+  processor target with a 24 MHz crystal and bypassable PLL, pin/power budget
+  and GPIO alternate functions. It distinguishes the current 24 MHz baseline
+  from the deferred Gen1 integration ABI and physical qualification.
+
+- [timer.md](timer.md) defines the dual APB4 general timer.
+- [sysctrl.md](sysctrl.md) defines the APB4 SystemCtrl register ABI, control-plane contracts, HAL, and verification.
+- [resource-controller.md](resource-controller.md) defines root-managed resource ownership, IRQ routing, and cache-maintenance handoff.
+- [fabric-monitor.md](fabric-monitor.md) defines data-plane counters, sticky
+  fault retention, snapshot semantics, and the public HAL.
+- [user-ip.md](user-ip.md) defines the selectable user-IP window and software ownership boundary.
+- [ws2812.md](ws2812.md) defines the WS2812 transmitter.
+- [clint.md](clint.md) defines the management-hart software and timer interrupt block.
+- [gpio.md](gpio.md) defines the dual-window GPIO controller.
+- [uart.md](uart.md) defines the APB4 UART controller.
+- [i2c.md](i2c.md) defines the dual APB4 I2C controllers.
+- [dvp.md](dvp.md) defines the APB4 DVP capture controller.
+- [i2s.md](i2s.md) defines the APB4 I2S master transceiver.
+- [usb2.md](usb2.md) defines the dual-role ULPI USB 2.0 controller, AXI4
+  descriptor DMA, dedicated-pad integration, HAL, and commercial release gates.
+- [crypto.md](crypto.md) defines AES/SHA-2/RSA and its macro-first refreeze:
+  six private SRAM banks, LP constant initialization, APB V2, bounded erasure,
+  preserved algorithm/DMA/IRQ contracts and stable CRYPTO-P0/P1/P2 phases.
+  The storage refreeze is specified, not yet implemented or qualified.
+- [jpeg.md](jpeg.md) defines the Baseline JPEG encoder/decoder, commercial
+  reference survey, APB4/AXI4 DMA and SG-ring ABI, HAL, verification evidence,
+  measured performance baseline, and 1080p60 optimization gates.
+- [ga2d.md](ga2d.md) freezes the Mini 2D graphics accelerator, private AXI64
+  DMA, APB4 and HAL ABI, expanded LP interrupts, ninth data master, and
+  ordered implementation/evidence phases; it does not claim implemented RTL.
+- [apu.md](apu.md) defines the coreless Mini Audio Processing Unit, bounded
+  codec microcode ISA, WAV/MP3/FLAC decode, private AXI4 DMA, APB4/ring ABI,
+  I2S streams, independent KWS, lifecycle, and commercial delivery gates.
+- [npu.md](npu.md) freezes the independent 64-MAC, 64 KiB Mini NPU,
+  private AXI64 DMA, APB4/job/HAL ABI, resource/IRQ and lifecycle contracts,
+  and stable Phases 0-6. [npu-verification.md](npu-verification.md) defines
+  numerical, fixed-model, protocol, performance and physical acceptance;
+  implementation and evidence remain pending.
+- [mini-npu.md](mini-npu.md) retains historical commercial NPU research;
+  its old platform assumptions and architecture direction are superseded.
+- [sdram.md](sdram.md) defines the AXI4 SDRAM data controller and APB4 configuration window.
+- [xpi.md](xpi.md) defines the native-AXI4/APB4 XPI V2 controller, commercial reference survey, LUT and PHY contracts, HAL, JTAG NOR programming, and delivery boundary.
+
+The corresponding RTL and HAL implementations remain the executable sources
+of truth. Update the affected document whenever an IP interface or register ABI
+changes.

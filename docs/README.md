@@ -1,0 +1,153 @@
+# Engineering Documentation
+
+This directory contains repository-level engineering policy that supplements
+the root README and subsystem guides.
+
+- [Tiny Gen1 QFN64](ip/tiny-soc.md) freezes the product/package target, 144 MHz
+  processor target with a 24 MHz crystal and bypassable PLL, pin/power budget
+  and GPIO alternate functions; it retains the separate 24 MHz implementation
+  baseline and identifies the deferred integration ABI.
+- [Tiny Gen1 datasheet](../publications/datasheets/tiny/README.md) describes the
+  current 24 MHz implementation, registers, software and qualification boundary;
+  it does not yet describe the QFN64 Gen1 target.
+
+- [Contributing](../CONTRIBUTING.md) describes community discussion, development,
+  review, validation evidence, and maintainer responsibilities.
+- [git-workflow.md](git-workflow.md) defines branch and commit conventions,
+  merge-commit integration, synchronization, and conflict recovery.
+- [engineering.md](engineering.md) describes reproducible inputs, build
+  artifacts, result policy, warning baselines, metrics, CI, and releases.
+- [development-environment.md](development-environment.md) describes the
+  Docker, Nix, and manual open-source regression environments.
+- [misra-c-2012.md](misra-c-2012.md) defines the MISRA C:2012 Amendment 2
+  baseline, scope, partial automation, and deviation process.
+- [rtl-coding-style.md](rtl-coding-style.md) is the normative self-owned RTL
+  policy; [rtl-coding-style-compliance.md](rtl-coding-style-compliance.md)
+  defines its executable audit and behavior-preserving migration process.
+- [pll-clock-control.md](pll-clock-control.md) describes the SYSCTRL PLL
+  register protocol and software quiesce contract.
+- [hazard3-debug.md](hazard3-debug.md) defines the management Hazard3 JTAG
+  Debug Module integration, reset boundary, and Verilator/OpenOCD/GDB flow.
+- [lp-hp-architecture.md](lp-hp-architecture.md) defines the current Mini
+  product AON/LP/HP/PCLK, AXI64 data-plane, memory-pad, and extension contract.
+- [commercial-soc-alignment.md](commercial-soc-alignment.md) records the
+  selected commercial architecture patterns and their reuse boundaries.
+- [mini-high-performance-traceability.md](mini-high-performance-traceability.md)
+  maps Mini architecture requirements to implementation and evidence status.
+- [coremark.md](coremark.md) defines the SRAM-resident Hazard3 CoreMark quick
+  measurement, optional standard hardware run, and structured result format.
+- [soc-family-positioning.md](soc-family-positioning.md) defines the planned
+  Tiny, Mini, Std, and Pro product ladder, the implemented Mini baseline,
+  planned product targets, claim gates, and commercial reference points.
+- [rib-interconnect.md](rib-interconnect.md) defines the RIB v1 linear-burst
+  contract, compatibility boundaries, target status, and verification.
+- [axi4-interconnect.md](axi4-interconnect.md) defines the active Mini SoC AXI4
+  subset, arbitration, target, access-control, error, and performance contract.
+- [axi4-sdram-performance.md](axi4-sdram-performance.md) records the commercial
+  SDRAM-controller survey, the implemented retroSoC MVP, and the performance
+  roadmap that stays inside the phase-separated 16-bit / 64 MiB contract.
+- [axi4-stream.md](axi4-stream.md) defines the DMA, I2S, and DVP AXI4-Stream
+  data paths, PIO fallback, register controls, and backpressure contract.
+- [ip/dma.md](ip/dma.md) defines the native-AXI4 six-channel Mini DMA direct-mode
+  register ABI, SDK API, scheduling, error, IRQ, and stream contracts.
+- [ip/crypto.md](ip/crypto.md) records the commercial AES/SHA/RSA survey and
+  defines the Mini SoC crypto architecture, APB/DMA ABI, security boundary,
+  HAL, verification evidence, and commercialization roadmap. Its approved
+  storage refreeze specifies six private SRAM banks, LP-loaded/locked constants,
+  synchronous AES/SHA/RSA access, APB V2 and verified scrub completion;
+  P0 baseline and P1 implementation/evidence entry points are recorded there;
+  [ip/crypto-verification.md](ip/crypto-verification.md) maps P1 review fixes
+  to control proofs, physical-data checks and firmware/error-path evidence.
+  P2 integration and physical qualification remain separate gates.
+- [ip/usb2.md](ip/usb2.md) defines the ULPI USB 2.0 dual-role architecture,
+  AXI4 descriptor DMA, APB4 ABI, dedicated pads, HAL, and release gates.
+- [ip/jpeg.md](ip/jpeg.md) records the commercial JPEG IP/SoC survey and
+  defines the Mini Baseline JPEG codec, private AXI4 DMA, APB4/ring ABI, HAL,
+  verification boundary, and measured 1080p60 optimization plan.
+- [ip/ga2d.md](ip/ga2d.md) freezes the Mini 2D graphics accelerator, private
+  AXI64 2D DMA, APB4/HAL ABI, opaque alpha composition, and the approved LP
+  interrupt/fabric expansion phases; implementation and PPA evidence remain pending.
+- [ip/apu.md](ip/apu.md) defines the coreless Mini Audio Processing Unit,
+  including LP-loaded codec microcode, WAV/FLAC decode, private AXI4 DMA,
+  APB4/ring ABI, I2S streams, independent KWS, lifecycle, and evidence gates;
+  its P5 capacity refreeze specifies a 4096-word control store and versioned
+  APUMC V2 with V1 compatibility. P6 MP3 is deferred. The P7 refreeze fixes
+  APUM wire/numerical/HAL contracts and the content-hashed
+  [1000-waveform input manifest](ip/apu-kws-corpus.tsv); P7 starts from reviewed
+  P5 and retains the MP3 unsupported stub. The P9 macro-first refreeze moves
+  coefficient/profile tables and proof memoization to dedicated SRAMs, fixes
+  APUC loading and APB V1.2, and requires memory/time/RSS A/B evidence before
+  final P8 physical closure; it does not reduce KWS numerical accuracy or
+  advertised workspace capacity.
+- [ip/npu.md](ip/npu.md) freezes the independent 64-MAC Mini NPU, 64 KiB
+  private SRAM, AXI64 DMA, APB4/job/HAL ABI, resource and clock/reset contracts,
+  and stable Phases 0-6. [Its verification contract](ip/npu-verification.md)
+  defines fixed-model and physical evidence gates; implementation is pending.
+- [ip/mini-npu.md](ip/mini-npu.md) retains the historical commercial NPU
+  survey; its former platform assumptions and architecture recommendation are
+  superseded by the current platform and frozen NPU specification.
+- [ip/ws2812.md](ip/ws2812.md) defines the WS2812 transmitter register ABI,
+  timing, FIFO, interrupt, DMA, and integration contracts.
+- [ip/timer.md](ip/timer.md) defines the dual general timer register ABI,
+  counting modes, interrupt, debug-freeze, HAL, and verification contracts.
+- [ip/sysctrl.md](ip/sysctrl.md) defines the SystemCtrl compatibility,
+  clock/pad/fault/performance/RTC/test contracts, HAL, and verification.
+- [ip/hp-platform.md](ip/hp-platform.md) defines the experimental HP PLIC and
+  LP/HP mailbox register, interrupt, software, and verification contracts.
+- [hp-rv64-validation.md](hp-rv64-validation.md) records RV64 core, V2 bundle,
+  RT-Thread/Linux acceptance evidence and deferred gates.
+- [ip/onchip-sram.md](ip/onchip-sram.md) defines the configurable native-AXI4
+  SRAM architecture, APB capability ABI, technology mapping, verification, and
+  reliability roadmap.
+- [ip/user-ip.md](ip/user-ip.md) defines the MPW and product-compatibility
+  behavior of the legacy 4 KiB user-IP window.
+- [ip/extensions.md](ip/extensions.md) defines product EXT-L/EXT-H fixed
+  windows, lifecycle, capability, ACL, fault, and HAL contracts.
+- [ip/resource-controller.md](ip/resource-controller.md) defines centralized
+  DMA/I/O/EXT-H ownership, IRQ routing, cache handoff, and fault contracts.
+- [ip/fabric-monitor.md](ip/fabric-monitor.md) defines native AXI64 master and
+  target counters, sticky fault retention, snapshots, and the HAL contract.
+- [ip/clint.md](ip/clint.md) defines the standard CLINT register map, fixed
+  timebase, RV32 access rules, interrupt behavior, and verification contract.
+- [ip/gpio.md](ip/gpio.md) defines the GPIO dual-window ABI, pad ownership,
+  filtering, interrupts, PDK capabilities, HAL, and verification contract.
+- [ip/uart.md](ip/uart.md) defines the UART framing, FIFO, RTS/CTS flow
+  control, error, interrupt, DMA, HAL, and verification contracts.
+- [ip/i2c.md](ip/i2c.md) defines the dual I2C command, timing, error,
+  recovery, DMA, HAL, and verification contracts.
+- [ip/i2s.md](ip/i2s.md) defines the I2S master register ABI, phase-separated
+  PHY, AXI4-Stream packing, CDC, HAL, and verification contracts.
+- [ip/psram.md](ip/psram.md) defines the four-chip ESP-PSRAM64H AXI/APB4
+  controller, register ABI, timing, isolation, recovery, HAL, and verification
+  contracts.
+- [ip/opipsram.md](ip/opipsram.md) defines the boot-selected OPI/xSPI and
+  single-clock HyperBus profiles, shared digital PHY, delay-cell boundary,
+  register ABI, central-DMA use, and commercial signoff limits.
+- [ip/xpi.md](ip/xpi.md) defines the four-slot SDR XPI V2 controller,
+  native-AXI4 mapped windows, APB4/LUT ABI, indirect/DMA/polling modes, JTAG
+  NOR loader, commercial survey, and verification boundary.
+- [ip/sdio-verification.md](ip/sdio-verification.md) records the standalone
+  SD/SDIO behavioral models, directed coverage, formal bound, and verification
+  blockers.
+- [ip/spisd.md](ip/spisd.md) defines the SPI-mode SD host commercial survey,
+  APB/AXI architecture, register and descriptor ABI, HAL, and product boundary;
+  [ip/spisd-verification.md](ip/spisd-verification.md) records its evidence and
+  commercial delivery gaps.
+- [ip/ps2.md](ip/ps2.md) defines the Mini SoC PS/2 APB, GPIO pad,
+  interrupt, SDK, and managed-IP integration contract.
+- The managed [RTC V2 datasheet](../rtl/managed/clusterip/rtc/doc/datasheet.md)
+  defines Epoch time, alarms, periodic wake, calibration, CDC, and software.
+- The managed [CRC V2 datasheet](../rtl/managed/clusterip/crc/doc/datasheet.md)
+  defines the programmable streaming CRC engine, APB ABI, errors, and software.
+- The managed [PWM V2 datasheet](../rtl/managed/clusterip/pwm/doc/datasheet.md)
+  defines the dual-timer/four-channel LED and motor PWM controller, fault,
+  synchronization, dead-time, carrier, fade, and capture contracts.
+- [soc-integration-wiring.md](soc-integration-wiring.md) defines the generated
+  pin-map workflow and SoC integration boundary.
+- [mini-soc-block-diagram.svg](mini-soc-block-diagram.svg) is the Mini SoC
+  architecture overview. Its Graphviz source is
+  [mini-soc-block-diagram.dot](mini-soc-block-diagram.dot).
+
+Keep policy descriptions here concise and link to executable configuration as
+the source of truth. Changes that alter process requirements must also update
+[`AGENTS.md`](../AGENTS.md) when agents need to follow them.
