@@ -1,0 +1,27 @@
+{
+  "schema_version": 3,
+  "mode": "product",
+  "gpio_width": 32,
+  "extensions": [
+    {
+      "slot": 0,
+      "kind": "ext_l",
+      "control_region": "APB4_EXT_L",
+      "irq_base": 27,
+      "irq_count": 1,
+      "data_master": false,
+      "stream": false,
+      "local_sram": false
+    },
+    {
+      "slot": 1,
+      "kind": "ext_h",
+      "control_region": "APB4_EXT_H",
+      "irq_base": 28,
+      "irq_count": 1,
+      "data_master": true,
+      "stream": false,
+      "local_sram": false
+    }
+  ]
+}
