@@ -1,0 +1,68 @@
+// Copyright (c) 2023-2026 Yuchi Miao <miaoyuchi@ict.ac.cn>
+// retroSoC is licensed under Mulan PSL v2.
+// You can use this software according to the terms and conditions of the Mulan PSL v2.
+// You may obtain a copy of Mulan PSL v2 at:
+//             http://license.coscl.org.cn/MulanPSL2
+// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+// EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+// MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+// See the Mulan PSL v2 for more details.
+
+`include "user_extensions.svh"
+
+module user_ip_wrapper (
+    // verilog_format: off -- preserve reviewed column alignment
+    input  logic                         clk_i,
+    input  logic                         rst_n_i,
+    input  logic [`USER_IPSEL_WIDTH-1:0] sel_i,
+    user_gpio_if.user_ip                 gpio,
+    apb4_if.slave                        apb
+    // verilog_format: on
+);
+
+  apb4_if u_demo_apb4_if (
+      .pclk   (clk_i),
+      .presetn(rst_n_i)
+  );
+  apb4_if u_user_apb4_if (
+      .pclk   (clk_i),
+      .presetn(rst_n_i)
+  );
+
+  apb4_archinfo u_apb4_archinfo_ip (
+      .device_id_i            (128'h0000_0000_0000_0000_0000_0000_0000_0000),
+      .device_id_valid_i      (1'b0),
+      .device_id_read_enable_i(1'b0),
+      .apb4                   (u_demo_apb4_if)
+  );
+
+  assign apb.pready             = ~(|sel_i) ? u_demo_apb4_if.pready : u_user_apb4_if.pready;
+  assign apb.prdata             = ~(|sel_i) ? u_demo_apb4_if.prdata : u_user_apb4_if.prdata;
+  assign apb.pslverr            = ~(|sel_i) ? u_demo_apb4_if.pslverr : u_user_apb4_if.pslverr;
+
+  assign u_demo_apb4_if.paddr   = ~(|sel_i) ? apb.paddr : '0;
+  assign u_demo_apb4_if.pprot   = ~(|sel_i) ? apb.pprot : '0;
+  assign u_demo_apb4_if.psel    = ~(|sel_i) ? apb.psel : '0;
+  assign u_demo_apb4_if.penable = ~(|sel_i) ? apb.penable : '0;
+  assign u_demo_apb4_if.pwrite  = ~(|sel_i) ? apb.pwrite : '0;
+  assign u_demo_apb4_if.pwdata  = ~(|sel_i) ? apb.pwdata : '0;
+  assign u_demo_apb4_if.pstrb   = ~(|sel_i) ? apb.pstrb : '0;
+
+  assign u_user_apb4_if.paddr   = |sel_i ? apb.paddr : '0;
+  assign u_user_apb4_if.pprot   = |sel_i ? apb.pprot : '0;
+  assign u_user_apb4_if.psel    = |sel_i ? apb.psel : '0;
+  assign u_user_apb4_if.penable = |sel_i ? apb.penable : '0;
+  assign u_user_apb4_if.pwrite  = |sel_i ? apb.pwrite : '0;
+  assign u_user_apb4_if.pwdata  = |sel_i ? apb.pwdata : '0;
+  assign u_user_apb4_if.pstrb   = |sel_i ? apb.pstrb : '0;
+
+  user_ip_top u_user_ip_top (
+      .clk_i  (clk_i),
+      .rst_n_i(rst_n_i),
+      .sel_i  (sel_i),
+      .gpio   (gpio),
+      .apb    (u_user_apb4_if)
+  );
+
+
+endmodule
