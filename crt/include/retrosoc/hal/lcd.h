@@ -1,0 +1,23 @@
+#ifndef RETROSOC_LCD_H
+#define RETROSOC_LCD_H
+
+#include <stdint.h>
+
+#define USE_HORIZONTAL 2
+
+#if USE_HORIZONTAL == 0 || USE_HORIZONTAL == 1
+#define LCD_W 135
+#define LCD_H 240
+#else
+#define LCD_W 240
+#define LCD_H 135
+#endif
+
+#define USE_SPISD_DMA
+
+void lcd_init(void);
+void ip_lcd_test(int argc, char **argv);
+void lcd_addr_set(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+void lcd_fill_image(uint16_t xsta, uint16_t ysta, uint16_t xend, uint16_t yend, uint32_t *data);
+void lcd_fill_video(uint16_t xsta, uint16_t ysta, uint16_t xend, uint16_t yend, uint32_t *data);
+#endif
