@@ -1,0 +1,85 @@
+// Copyright (c) 2026 Yuchi Miao <miaoyuchi@ict.ac.cn>
+// retroSoC is licensed under Mulan PSL v2.
+// You can use this software according to the terms and conditions of the Mulan PSL v2.
+// You may obtain a copy of Mulan PSL v2 at:
+//             http://license.coscl.org.cn/MulanPSL2
+// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+// EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+// See the Mulan PSL v2 for more details.
+
+module clint_timebase #(
+    parameter int RefClkHz   = 72_000_000,
+    parameter int TimebaseHz = 1_000_000,
+    parameter int CdcStage   = 2
+) (
+    // verilog_format: off -- preserve reviewed column alignment
+    input  logic ref_clk_i,
+    input  logic ref_rst_n_i,
+    input  logic sys_clk_i,
+    input  logic sys_rst_n_i,
+    output logic tick_o
+    // verilog_format: on
+);
+
+  localparam int DIVISOR = RefClkHz / TimebaseHz;
+  localparam int DIV_WIDTH = DIVISOR > 1 ? $clog2(DIVISOR) : 1;
+
+  logic [DIV_WIDTH-1:0] s_div_count;
+  logic                 s_div_terminal;
+  logic s_tick_toggle_d, s_tick_toggle_q;
+  logic s_tick_toggle_sync;
+  logic s_tick_re, s_tick_fe;
+
+`ifndef SYNTHESIS
+  initial begin
+    if ((RefClkHz <= 0) || (TimebaseHz <= 0) || (RefClkHz < TimebaseHz) ||
+        ((RefClkHz % TimebaseHz) != 0)) begin
+      $fatal(1, "clint_timebase: RefClkHz must be a positive multiple of TimebaseHz");
+    end
+  end
+`endif
+
+  assign s_div_terminal = s_div_count == DIV_WIDTH'(DIVISOR - 1);
+
+  // The divider clears before its natural carry; the Common carry output is intentionally unused.
+  /* verilator lint_off PINCONNECTEMPTY */
+  rs_counter #(
+      .DATA_WIDTH(DIV_WIDTH)
+  ) u_div_counter (
+      .clk_i  (ref_clk_i),
+      .rst_n_i(ref_rst_n_i),
+      .clr_i  (s_div_terminal),
+      .en_i   (1'b1),
+      .load_i (1'b0),
+      .down_i (1'b0),
+      .dat_i  ('0),
+      .dat_o  (s_div_count),
+      .ovf_o  ()
+  );
+  /* verilator lint_on PINCONNECTEMPTY */
+
+  assign s_tick_toggle_d = s_div_terminal ? ~s_tick_toggle_q : s_tick_toggle_q;
+  dffr #(
+      .DATA_WIDTH(1)
+  ) u_tick_toggle_dffr (
+      .clk_i  (ref_clk_i),
+      .rst_n_i(ref_rst_n_i),
+      .dat_i  (s_tick_toggle_d),
+      .dat_o  (s_tick_toggle_q)
+  );
+
+  edge_det #(
+      .STAGE(CdcStage)
+  ) u_tick_edge_det (
+      .clk_i  (sys_clk_i),
+      .rst_n_i(sys_rst_n_i),
+      .dat_i  (s_tick_toggle_q),
+      .dat_o  (s_tick_toggle_sync),
+      .re_o   (s_tick_re),
+      .fe_o   (s_tick_fe)
+  );
+
+  assign tick_o = (s_tick_re && !s_tick_toggle_sync) || (s_tick_fe && s_tick_toggle_sync);
+
+endmodule
