@@ -1,0 +1,32 @@
+{
+  "entries": [
+    {
+      "count": 1,
+      "example": "warning:asynchronous load value missing for variable '\\update_hart_data0.i'",
+      "signature": "08138257546e860c"
+    },
+    {
+      "count": 1,
+      "example": "warning:asynchronous load value missing for variable '\\update_irq_reg_arrays.i'",
+      "signature": "56c5f69398be8d7b"
+    },
+    {
+      "count": 13,
+      "example": "warning:The network is combinational (run \"fraig\" or \"fraig_sweep\").",
+      "signature": "62cc5ee554312205"
+    },
+    {
+      "count": 2,
+      "example": "warning:asynchronous load value missing for variable '\\update_nonconst.prev'",
+      "signature": "a30df20b98d49196"
+    },
+    {
+      "count": 2,
+      "example": "warning:asynchronous load value missing for variable '\\update_nonconst.nonconst'",
+      "signature": "d35463a1de40c7b2"
+    }
+  ],
+  "profile": "ihp130",
+  "schema_version": 1,
+  "tool": "yosys"
+}

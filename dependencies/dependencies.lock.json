@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "publication_media": {
+      "url": "https://github.com/retroSoC/media.git",
+      "revision": "0405410177d22b93bd657f7895cb154e83646df0",
+      "destination": "publications/media",
+      "license": "MulanPSL-2.0 AND OFL-1.1",
+      "purpose": "Publication fonts, licenses and original artwork"
+    },
+    "mpw": {
+      "url": "https://github.com/retroSoC/mini-ver-mpw.git",
+      "revision": "e63d5cd71ffd912ad4f901e59f7f848c1a8bbfbd",
+      "destination": "rtl/managed/mpw",
+      "license": "NOASSERTION"
+    },
+    "hazard3": {
+      "url": "https://github.com/Wren6991/Hazard3.git",
+      "revision": "5b3a34f6955e50e03bdcb964201c91462f7078c3",
+      "destination": "rtl/managed/hazard3",
+      "license": "NOASSERTION"
+    },
+    "vexiiriscv": {
+      "url": "https://github.com/SpinalHDL/VexiiRiscv.git",
+      "revision": "ef7da4134ff11ec6a681d0632123b232b853b046",
+      "destination": ".cache/retrosoc/sources/vexiiriscv",
+      "recursive": true,
+      "license": "MIT"
+    },
+    "rtthread_hp": {
+      "url": "https://github.com/RT-Thread/rt-thread.git",
+      "revision": "99428a1e7f7447955aa860f7c969273a12095b8f",
+      "destination": ".cache/retrosoc/sources/rtthread-hp",
+      "license": "Apache-2.0"
+    },
+    "opensbi_hp": {
+      "url": "https://github.com/riscv-software-src/opensbi.git",
+      "revision": "cbf9f6734dd85a982c63e3cb5db7ffe09da839ca",
+      "destination": ".cache/retrosoc/sources/opensbi-hp",
+      "license": "BSD-2-Clause"
+    },
+    "linux_hp": {
+      "url": "https://github.com/gregkh/linux.git",
+      "revision": "14c37ff05f22da2fa7076d10f6a07c7ede330c83",
+      "destination": ".cache/retrosoc/sources/linux-hp",
+      "license": "GPL-2.0-only"
+    },
+    "buildroot_hp": {
+      "url": "https://gitlab.com/buildroot.org/buildroot.git",
+      "revision": "cb857ba4c87a93e5265a9e4a3f32071abf39e14a",
+      "destination": ".cache/retrosoc/sources/buildroot-hp",
+      "license": "GPL-2.0-or-later"
+    },
+    "ibex": {
+      "url": "https://github.com/lowRISC/ibex.git",
+      "revision": "0c233f54361d769f370889223acc456f2ac19d46",
+      "destination": "rtl/managed/mpw/ibex",
+      "license": "Apache-2.0"
+    },
+    "coremark": {
+      "url": "https://github.com/eembc/coremark.git",
+      "revision": "1f483d5b8316753a742cbf5590caf5bd0a4e4777",
+      "destination": "app/coremark/coremark-main",
+      "license": "Apache-2.0"
+    },
+    "apu_libflac": {
+      "url": "https://github.com/xiph/flac.git",
+      "revision": "1507800de4b70e21be71f38caa0d9079d0bc6e45",
+      "destination": ".cache/retrosoc/sources/apu-libflac",
+      "license": "NOASSERTION"
+    },
+    "apu_flac_corpus": {
+      "url": "https://github.com/ietf-wg-cellar/flac-test-files.git",
+      "revision": "aa7b0c6cf32994c106ae517a08134c28a96ff5b2",
+      "destination": ".cache/retrosoc/sources/apu-flac-corpus",
+      "license": "CC0-1.0"
+    },
+    "apu_mlperf_tiny": {
+      "url": "https://github.com/mlcommons/tiny.git",
+      "revision": "4addd0fa08d216e20637637874e084895f289da4",
+      "destination": ".cache/retrosoc/sources/apu-mlperf-tiny",
+      "license": "Apache-2.0"
+    },
+    "apu_kws_mfcc": {
+      "url": "https://github.com/eembc/benchmark-runner-ml.git",
+      "revision": "cf7c2f2634608a7c0ea7458ab7cb3379f2863424",
+      "destination": ".cache/retrosoc/sources/apu-kws-mfcc",
+      "license": "NOASSERTION"
+    },
+    "apu_tfds": {
+      "url": "https://github.com/tensorflow/datasets.git",
+      "revision": "8997c4140cd4fc145f0693787b1da78691930459",
+      "destination": ".cache/retrosoc/sources/apu-tfds",
+      "license": "Apache-2.0"
+    },
+    "apu_tensorflow": {
+      "url": "https://github.com/tensorflow/tensorflow.git",
+      "revision": "fcc4b966f1265f466e82617020af93670141b009",
+      "destination": ".cache/retrosoc/sources/apu-tensorflow",
+      "license": "Apache-2.0"
+    },
+    "apu_gemmlowp": {
+      "url": "https://github.com/google/gemmlowp.git",
+      "revision": "fda83bdc38b118cc6b56753bd540caa49e570745",
+      "destination": ".cache/retrosoc/sources/apu-gemmlowp",
+      "license": "Apache-2.0"
+    },
+    "third_party_ip": {
+      "url": "https://github.com/retroSoC/3rd-party.git",
+      "revision": "d991ec9f7bf696e7e5d840758487068b11bd4121",
+      "destination": "rtl/managed/third_party",
+      "license": "NOASSERTION"
+    },
+    "pdk_ihp130": {
+      "url": "https://github.com/IHP-GmbH/IHP-Open-PDK.git",
+      "revision": "970a7688e7dcce2a6172797df9ef47bde2f60f9f",
+      "destination": "physical/pdk/IHP-Open-PDK",
+      "recursive": true,
+      "license": "Apache-2.0"
+    },
+    "pdk_ics55": {
+      "url": "https://github.com/openecos-projects/icsprout55-pdk.git",
+      "revision": "e696e093129ca2212487aa169af74d06ebd86eb6",
+      "destination": "physical/pdk/icsprout55-pdk",
+      "recursive": true,
+      "license": "Apache-2.0"
+    },
+    "pdk_gf180": {
+      "url": "https://github.com/google/gf180mcu-pdk.git",
+      "revision": "de3240d7529a6970437ac3344820aaae7839f215",
+      "destination": "physical/pdk/gf180mcu-pdk",
+      "recursive": true,
+      "license": "Apache-2.0"
+    },
+    "pdk_sky130": {
+      "url": "https://github.com/google/skywater-pdk.git",
+      "revision": "7198cf647113f56041e02abf3eb623692820c5e1",
+      "destination": "physical/pdk/skywater-pdk",
+      "recursive": true,
+      "submodules": ["libraries/sky130_fd_sc_hd/latest"],
+      "license": "Apache-2.0"
+    },
+    "cluster_archinfo": {"url": "https://github.com/retroSoC/archinfo.git", "revision": "78505969a0afdbc887cdd9b36eda228b4afb616e", "destination": "rtl/managed/clusterip/archinfo", "license": "MulanPSL-2.0"},
+    "cluster_common": {"url": "https://github.com/retroSoC/common.git", "revision": "964a54d70cb78e394ba9a25c05f2aa2b02941fb7", "destination": "rtl/managed/clusterip/common", "license": "NOASSERTION"},
+    "cluster_crc": {"url": "https://github.com/retroSoC/crc.git", "revision": "8c1a5664c4d23d005c1afad432372a13ca967cc8", "destination": "rtl/managed/clusterip/crc", "license": "MulanPSL-2.0"},
+    "cluster_ps2": {"url": "https://github.com/retroSoC/ps2.git", "revision": "2097a0d41b07573ff0453d65ba9a1670b3df7b9c", "destination": "rtl/managed/clusterip/ps2", "license": "MulanPSL-2.0"},
+    "cluster_pwm": {"url": "https://github.com/retroSoC/pwm.git", "revision": "79ae32f725e848a1e7f6134847b3fb032ed64006", "destination": "rtl/managed/clusterip/pwm", "license": "MulanPSL-2.0"},
+    "cluster_rng": {"url": "https://github.com/retroSoC/rng.git", "revision": "36f3e0774d8f3c4b597d3db8a96ca3992532b61e", "destination": "rtl/managed/clusterip/rng", "license": "MulanPSL-2.0"},
+    "cluster_rtc": {"url": "https://github.com/retroSoC/rtc.git", "revision": "32548c5cbcdf39e09d0880fb611f9dd47940ea88", "destination": "rtl/managed/clusterip/rtc", "license": "NOASSERTION"},
+    "cluster_wdg": {"url": "https://github.com/retroSoC/wdg.git", "revision": "f5d39fa246054d678d34195824d943367dfcce44", "destination": "rtl/managed/clusterip/wdg", "license": "MulanPSL-2.0"}
+  },
+  "archives": {
+    "typst_bytefield": {
+      "package_name": "bytefield",
+      "version": "0.0.8",
+      "url": "https://packages.typst.org/preview/bytefield-0.0.8.tar.gz",
+      "sha256": "00b81fcabf5a2601da82812ce3274597baea4831b014f790a6350948470403c6",
+      "destination": ".cache/retrosoc/publications/packages/preview/bytefield/0.0.8",
+      "license": "MIT"
+    },
+    "typst_rivet": {
+      "package_name": "rivet",
+      "version": "0.3.1",
+      "url": "https://packages.typst.org/preview/rivet-0.3.1.tar.gz",
+      "sha256": "8057237ae348189df303fbc45548c87a6cf24f5c58c19a072b1d20fa4ce3bcc8",
+      "destination": ".cache/retrosoc/publications/packages/preview/rivet/0.3.1",
+      "license": "Apache-2.0"
+    },
+    "typst_blockcell": {
+      "package_name": "blockcell",
+      "version": "0.1.0",
+      "url": "https://packages.typst.org/preview/blockcell-0.1.0.tar.gz",
+      "sha256": "cf086664a01bf6ca4b7fa84a9746589039887f4bda13fe7b7781d1cea35f3164",
+      "destination": ".cache/retrosoc/publications/packages/preview/blockcell/0.1.0",
+      "license": "MIT"
+    },
+    "typst_circuiteria": {
+      "package_name": "circuiteria",
+      "version": "0.2.1",
+      "url": "https://packages.typst.org/preview/circuiteria-0.2.1.tar.gz",
+      "sha256": "207e33352f115c00d6ee141e3d2c89691f1307c456272e0e187f5303c9892729",
+      "destination": ".cache/retrosoc/publications/packages/preview/circuiteria/0.2.1",
+      "license": "Apache-2.0"
+    },
+    "typst_cetz_0_3_4": {
+      "package_name": "cetz",
+      "version": "0.3.4",
+      "url": "https://packages.typst.org/preview/cetz-0.3.4.tar.gz",
+      "sha256": "4f4b5a8d311d519e749940a766fe50521e40c041129e1c91af0c42e61f307514",
+      "destination": ".cache/retrosoc/publications/packages/preview/cetz/0.3.4",
+      "license": "LGPL-3.0-or-later"
+    },
+    "typst_tidy": {
+      "package_name": "tidy",
+      "version": "0.3.0",
+      "url": "https://packages.typst.org/preview/tidy-0.3.0.tar.gz",
+      "sha256": "a4c75f15b2cacdeef858453cdea6ee6e665c3464ebb5097a5b1a9c309418c249",
+      "destination": ".cache/retrosoc/publications/packages/preview/tidy/0.3.0",
+      "license": "MIT"
+    },
+    "typst_oxifmt_0_2_1": {
+      "package_name": "oxifmt",
+      "version": "0.2.1",
+      "url": "https://packages.typst.org/preview/oxifmt-0.2.1.tar.gz",
+      "sha256": "16fac2923032c59727de01e84d42cac45e8790da28df56effca49f4de41b09d9",
+      "destination": ".cache/retrosoc/publications/packages/preview/oxifmt/0.2.1",
+      "license": "MIT-0"
+    },
+    "typst_wavy": {
+      "version": "0.1.3",
+      "url": "https://packages.typst.org/preview/wavy-0.1.3.tar.gz",
+      "sha256": "3a542065681a64beb9d430377ecbf210caa1f9d0e1968fd6284dd263f0a9391e",
+      "destination": ".cache/retrosoc/publications/packages/preview/wavy/0.1.3",
+      "license": "MIT"
+    },
+    "typst_jogs": {
+      "version": "0.2.4",
+      "url": "https://packages.typst.org/preview/jogs-0.2.4.tar.gz",
+      "sha256": "b653a1874492a6ffebb5ff894d0ca06d3523a1b8721eea2bc32034d8562ecb45",
+      "destination": ".cache/retrosoc/publications/packages/preview/jogs/0.2.4",
+      "license": "MIT"
+    },
+    "apu_libflac": {
+      "url": "https://codeload.github.com/xiph/flac/tar.gz/1507800de4b70e21be71f38caa0d9079d0bc6e45",
+      "sha256": "d80ef5facdb21972efe91774da03d6b9abf216aa17093d740fcc411cd8afbb41",
+      "destination": ".cache/retrosoc/downloads/apu/libflac-1507800de4b70e21be71f38caa0d9079d0bc6e45.tar.gz",
+      "license": "NOASSERTION"
+    },
+    "apu_flac_corpus": {
+      "url": "https://codeload.github.com/ietf-wg-cellar/flac-test-files/tar.gz/aa7b0c6cf32994c106ae517a08134c28a96ff5b2",
+      "sha256": "36de2310155b4084011fbd56f24603dfef91a26c5433e3f92bd21995b45089c3",
+      "destination": ".cache/retrosoc/downloads/apu/flac-corpus-aa7b0c6cf32994c106ae517a08134c28a96ff5b2.tar.gz",
+      "license": "CC0-1.0"
+    },
+    "apu_kws_pcm": {
+      "url": "https://download.tensorflow.org/data/speech_commands_test_set_v0.02.tar.gz",
+      "sha256": "cc2a00c1147c2254e9be3fa0f779d8c17421dc349b86366567a8edfa9acd51df",
+      "destination": ".cache/retrosoc/downloads/apu/kws-pcm-speech-commands-test-v0.02.tar.gz",
+      "license": "CC-BY-4.0"
+    },
+    "npu_vww_dataset": {
+      "url": "https://github.com/retroSoC/artifact/releases/download/npu-vww-dataset-f8746b9e44f8/vw_coco2014_96.tar.gz",
+      "fallback_urls": [
+        "https://www.silabs.com/public/files/github/machine_learning/benchmarks/datasets/vw_coco2014_96.tar.gz"
+      ],
+      "sha256": "f8746b9e44f8a7a4293f73be9ba6e8da9239fe69798d42364aae62b915cfab58",
+      "destination": ".cache/retrosoc/downloads/npu/vw-coco2014-96.tar.gz",
+      "license": "NOASSERTION"
+    },
+    "typst_cetz": {
+      "version": "0.5.2",
+      "url": "https://packages.typst.org/preview/cetz-0.5.2.tar.gz",
+      "sha256": "77cf8490114ae04c6e665a11efa691d284a0cadb9719771b5708c1197292f23f",
+      "destination": ".cache/retrosoc/publications/packages/preview/cetz/0.5.2",
+      "license": "LGPL-3.0-or-later"
+    },
+    "typst_oxifmt": {
+      "version": "1.0.0",
+      "url": "https://packages.typst.org/preview/oxifmt-1.0.0.tar.gz",
+      "sha256": "7d17a1fc8ad01740ec3cb2b03c7360a4225ff9318e5710765fa98ea6fd59594f",
+      "destination": ".cache/retrosoc/publications/packages/preview/oxifmt/1.0.0",
+      "license": "MIT OR Apache-2.0"
+    },
+    "libjpeg_turbo": {
+      "url": "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.2.0/libjpeg-turbo-3.2.0.tar.gz",
+      "sha256": "6f30092cef9fb839779646608f4ee14ae3cbac989c47fa05e841b0841f09878e",
+      "destination": ".cache/retrosoc/downloads/libjpeg-turbo/libjpeg-turbo-3.2.0.tar.gz",
+      "license": "BSD-3-Clause AND IJG"
+    },
+    "ecc_cli_linux_x86_64": {
+      "url": "https://github.com/openecos-projects/ecc/releases/download/v0.1.0-alpha.10/ecc-cli-linux-x86_64.tar.gz",
+      "sha256": "fc3daaca24dddb04ba3490329042f52da05190da03c3831042293dd0cbffdca6",
+      "destination": ".cache/retrosoc/downloads/ecc/ecc-cli-linux-x86_64-v0.1.0-alpha.10.tar.gz",
+      "license": "Apache-2.0"
+    },
+    "fatfs": {
+      "url": "https://github.com/retroSoC/artifact/releases/download/fatfs-r0.16/fatfs-r0.16.zip",
+      "sha256": "99f7dc1f7e095356e4a9e3dbe29959090d8b948afe2bbc5441e52fdf4b85449e",
+      "destination": "app/fatfs/ff16/ff16.zip",
+      "license": "LicenseRef-FatFs"
+    },
+    "pdk_ics55_h7cr_liberty": {
+      "url": "https://github.com/openecos-projects/icsprout55-pdk/releases/download/v1.10.100/ics55_LLSC_H7CR_liberty.tar.bz2",
+      "sha256": "faa3fc2f3ef8560c2d7cafc7800ecee39b69b8d177b14d098ed94062ba3f6e5c",
+      "destination": ".cache/retrosoc/downloads/pdk/ics55/ics55_LLSC_H7CR_liberty.tar.bz2",
+      "license": "Apache-2.0"
+    },
+    "sky130_openram_sram_4kbyte_1rw_32x1024_8": {
+      "url": "https://github.com/retroSoC/artifact/releases/download/openram-sky130_sram_4kbyte_1rw_32x1024_8-b2b069ce119d-24dfd2f0371c/sky130_sram_4kbyte_1rw_32x1024_8-openram-b2b069ce119d.tar.gz",
+      "sha256": "75d987556561c7f3e9bc29e59b854849c2938c509c1b2e37906eb2af6aae211e",
+      "destination": ".cache/retrosoc/downloads/pdk/sky130/sky130_sram_4kbyte_1rw_32x1024_8-openram-b2b069ce119d.tar.gz",
+      "license": "LicenseRef-OpenRAM-SKY130-Mixed"
+    },
+    "serv": {
+      "url": "https://github.com/olofk/serv/archive/refs/tags/1.4.0.tar.gz",
+      "sha256": "f81c37b9f9d548c658e23bb7eb90fbed8b54e2e9e51fa42b8cd2f34cecc472ab",
+      "destination": "rtl/managed/mpw/serv-1.4.0.tar.gz",
+      "license": "ISC"
+    }
+  },
+  "container_images": {
+    "ubuntu_22_04": {
+      "image": "ubuntu",
+      "digest": "sha256:0d779ea97881505f5ef0039336ee85edba27519bdba968c284c86ee066a973c8",
+      "url": "https://hub.docker.com/_/ubuntu",
+      "license": "NOASSERTION"
+    }
+  },
+  "nix_inputs": {
+    "nixpkgs": {
+      "url": "https://github.com/NixOS/nixpkgs",
+      "revision": "50ab793786d9de88ee30ec4e4c24fb4236fc2674",
+      "nar_hash": "sha256-/bVBlRpECLVzjV19t5KMdMFWSwKLtb5RyXdjz3LJT+g=",
+      "license": "MIT"
+    }
+  },
+  "publication_tools": {
+    "typst": {
+      "version": "0.15.1",
+      "url": "https://github.com/typst/typst/releases/tag/v0.15.1",
+      "installation": "Use the locally installed CLI; no automatic compiler download"
+    }
+  },
+  "toolchains": {
+    "ubuntu-22.04": {
+      "verilator": {
+        "version": "5.046",
+        "url": "https://github.com/retroSoC/artifact/releases/download/verilator-v5.046/verilator-v5.046-ubuntu-22.04-gcc.tar.gz",
+        "sha256": "17e88e100e82b9450040dabee7efaf49a834e8736fda4bbe1036aecd1c4aeb57",
+        "archive": "verilator-v5.046-ubuntu-22.04-gcc.tar.gz",
+        "path": "bin"
+      },
+      "verible": {
+        "version": "v0.0-3946-g851d3ff4",
+        "url": "https://github.com/chipsalliance/verible/releases/download/v0.0-3946-g851d3ff4/verible-v0.0-3946-g851d3ff4-linux-static-x86_64.tar.gz",
+        "sha256": "be81036ab5a3d5d5ba4ee677ebf9a09665779c3bd99ffe2e161c5025beaa1f16",
+        "archive": "verible-v0.0-3946-g851d3ff4-linux-static-x86_64.tar.gz",
+        "path": "verible-v0.0-3946-g851d3ff4/bin"
+      },
+      "sv2v": {
+        "version": "0.0.13-9-gd381209",
+        "url": "https://github.com/retroSoC/artifact/releases/download/sv2v-v0.0.13-9-gd381209/sv2v-v0.0.13-9-gd381209-ubuntu-22.04-gcc.tar.gz",
+        "sha256": "af0f5438fc293d1469d4d3e01be442663c55f5db6ff28bbed40722eaf429c690",
+        "archive": "sv2v-v0.0.13-9-gd381209-ubuntu-22.04-gcc.tar.gz",
+        "path": "."
+      },
+      "iverilog": {
+        "version": "13.0",
+        "url": "https://github.com/retroSoC/artifact/releases/download/iverilog-v13_0/iverilog-v13_0-ubuntu-22.04-gcc.tar.gz",
+        "sha256": "16fe3ce5ce7b16cc3e8d7d3756c4f9ad02f678a8f81bb43dd9473bde2e7fc81b",
+        "archive": "iverilog-v13_0-ubuntu-22.04-gcc.tar.gz",
+        "path": "bin"
+      },
+      "yosys": {
+        "version": "0.67",
+        "url": "https://github.com/retroSoC/artifact/releases/download/yosys-v0.67/yosys-v0.67-ubuntu-22.04-gcc.tar.gz",
+        "sha256": "272b5060e5c5d8c8830e2d4efd8d88f388fe39e152136bd99c293e718a91c1a7",
+        "archive": "yosys-v0.67-ubuntu-22.04-gcc.tar.gz",
+        "path": "bin"
+      },
+      "sby": {
+        "version": "0.67",
+        "url": "https://github.com/retroSoC/artifact/releases/download/sby-v0.67/sby-v0.67-ubuntu-22.04.tar.gz",
+        "sha256": "f97053fa43d01e9e343fd459e9a42424d31277204f2b0f19f00bbead657a7e3a",
+        "archive": "sby-v0.67-ubuntu-22.04.tar.gz",
+        "path": "bin"
+      },
+      "bitwuzla": {
+        "version": "0.9.1",
+        "url": "https://github.com/retroSoC/artifact/releases/download/bitwuzla-0.9.1/bitwuzla-0.9.1-ubuntu-22.04-gcc.tar.gz",
+        "sha256": "1f4a4c3f173ebb398628a033a867e0370694151223f2761eaaf9cba9e83ff996",
+        "archive": "bitwuzla-0.9.1-ubuntu-22.04-gcc.tar.gz",
+        "path": "bin"
+      },
+      "opensta": {
+        "version": "2.2.0-1767-ga93b51ec",
+        "url": "https://github.com/retroSoC/artifact/releases/download/opensta-v2.2.0-1767-ga93b51ec/opensta-v2.2.0-1767-ga93b51ec-ubuntu-22.04-gcc.tar.gz",
+        "sha256": "ab9f023eb46ed6197f8bd88584e77c26c31a728640db02b50908fac5bf9f279a",
+        "archive": "opensta-v2.2.0-1767-ga93b51ec-ubuntu-22.04-gcc.tar.gz",
+        "path": "bin"
+      },
+      "openocd": {
+        "version": "0.12.0-1",
+        "url": "https://github.com/xpack-dev-tools/openocd-xpack/releases/download/v0.12.0-1/xpack-openocd-0.12.0-1-linux-x64.tar.gz",
+        "sha256": "940f22eccddb0946b69149d227948f77d5917a2c5f1ab68e5d84d614c2ceed20",
+        "archive": "xpack-openocd-0.12.0-1-linux-x64.tar.gz",
+        "path": "xpack-openocd-0.12.0-1/bin"
+      },
+      "sbt": {
+        "version": "2.0.5",
+        "url": "https://github.com/sbt/sbt/releases/download/v2.0.5/sbt-2.0.5.tgz",
+        "sha256": "2a53c95403cb7fccd5da05d48cfe03ff4be573a3f3d0295a41963b109e756a18",
+        "archive": "sbt-2.0.5.tgz",
+        "path": "sbt/bin",
+        "download_timeout_seconds": 600,
+        "resume": true
+      },
+      "riscv_gnu_hp": {
+        "version": "2025.05.01",
+        "url": "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.05.01/riscv64-elf-ubuntu-22.04-gcc-nightly-2025.05.01-nightly.tar.xz",
+        "sha256": "57da2f16e772674ef0202b37217ccdcba3787e1a055ca92a83c9a5b240bca7d1",
+        "archive": "riscv64-elf-ubuntu-22.04-gcc-nightly-2025.05.01-nightly.tar.xz",
+        "path": "riscv/bin"
+      },
+      "riscv_gnu": {
+        "version": "2025.05.01",
+        "url": "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/2025.05.01/riscv32-elf-ubuntu-22.04-gcc-nightly-2025.05.01-nightly.tar.xz",
+        "sha256": "39dc7e8554d8d152258d2588cdb14c9dff5d2e8563325b78a923faa868a07191",
+        "archive": "riscv32-elf-ubuntu-22.04-gcc-nightly-2025.05.01-nightly.tar.xz",
+        "path": "riscv/bin"
+      }
+    }
+  }
+}

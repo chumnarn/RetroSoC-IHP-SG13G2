@@ -1,0 +1,62 @@
+# Locked Configuration Inputs
+
+`dependencies.lock.json` is the source of truth for external repositories,
+archives, OCI base images, Nix inputs, checksums, and CI tool bundles. Its digest
+contributes to every build variant identity. `flake.lock` resolves the pinned Nix
+inputs and is validated against this lock.
+
+Publication inputs are also locked here: `publication_media`, the CeTZ, oxifmt,
+wavy/jogs, bytefield, rivet, blockcell, circuiteria and tidy archives, and the
+locally required Typst version in `publication_tools`. Package identities include
+both name and version; CeTZ 0.3.4/0.5.2 and oxifmt 0.2.1/1.0.0 coexist as
+separate cache entries. Library imports are checked as a complete offline closure.
+They are prepared manually by `publications/build_datasheet.py setup`, without
+adding a root Makefile target. See [Publications](../publications/README.md).
+
+Do not add direct downloads to setup scripts or workflow YAML. Update the lock
+with a full Git revision or verified SHA-256 checksum, validate it with:
+
+```sh
+python3 scripts/dependency_lock.py --lock dependencies/dependencies.lock.json
+```
+
+Then run the affected setup, doctor, test, and regression flow described in
+[Engineering Workflow](../docs/engineering.md).
+
+The locked SKY130 OpenRAM SRAM archive is generated and published by the
+`retroSoC/artifact` workflow. `physical/pdk/setup.py` verifies its SHA-256,
+manifest, geometry, source revisions, generated-file hashes, and TT/SS views
+before materializing it below `.cache/retrosoc/pdk/sky130/openram/`. Generated
+Verilog, Liberty, LEF, GDS, and SPICE views are never committed here.
+
+The HP profile additionally locks VexiiRiscv, OpenSBI, Linux stable, and
+Buildroot source revisions and the SBT launcher used by VexiiRiscv generation.
+`make setup-hp-linux` installs the software sources below
+`.cache/retrosoc/sources/`; VexiiRiscv may be supplied through
+`VEXIIRISCV_ROOT`, but its revision is still checked before generated RTL is
+accepted. Java 17 is a host runtime supplied by Docker, Nix, or the documented
+Ubuntu prerequisites. No generated CPU RTL or Linux build output belongs in
+Git.
+
+`rtthread_hp` pins official RT-Thread v5.3.0 at
+`99428a1e7f7447955aa860f7c969273a12095b8f`. `make setup-hp-rtthread` installs
+that source, the checksum-locked `riscv_gnu_hp` RV64 compiler, and the hashed
+SCons requirement in a local virtual environment. The BSP is copied into the
+build variant and uses the upstream kernel/CPU port without modifying it.
+The LP SDK retains its existing RV32 toolchain.
+
+The libjpeg-turbo source archive is a host-verification input for the JPEG
+accelerator. It supplies an implementation-independent interoperability oracle;
+it is not linked into firmware or synthesized RTL. The repository-owned fixed
+point model remains the bit-accurate source of expected RTL results.
+
+The pinned libFLAC source and official FLAC test corpus are host-only APU-P5
+verification inputs. Install them with `make setup-apu-reference`; neither is
+linked into firmware, RTL, or the shipped APUMC bundle. Run
+`make CONFIG=configs/ci/ihp130.mk apu-p5-corpus` to produce the checksum-pinned
+per-file profile and independent PCM manifest.
+
+The NPU Visual Wake Words archive is mirrored as an unmodified release asset in
+`retroSoC/artifact`, with the original Silicon Labs URL retained as a fallback.
+Both locations resolve to the same required SHA-256; setup accepts neither a
+different archive nor a fallback with a non-HTTPS URL.
