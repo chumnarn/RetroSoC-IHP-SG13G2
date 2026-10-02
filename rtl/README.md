@@ -1,0 +1,206 @@
+# RTL Design and Simulation
+
+This directory contains retroSoC SystemVerilog RTL, CPU/IP integration,
+peripheral and technology wrappers, filelists, testbench support, and the Mini/Tiny
+SoC build entry points.
+
+`mini/` and `tiny/` own independent product integrations. Tiny is the single-hart
+AXI32/APB4 wired MCU described in [its contract](../docs/ip/tiny-soc.md). `managed/` contains locked or
+vendored integration inputs, `ip/` contains self-owned IP and experiments, and
+`model/` contains committed device simulation models with preserved upstream
+notices. `filelist/` selects PDK-specific RTL sources; `tech/` contains
+technology wrappers. Respect managed upstream boundaries and use setup helpers
+rather than editing generated MPW output.
+
+The optional IHP130 LP/HP profile integrates VexiiRiscv through self-owned
+wrappers, a 64-to-32 compatibility plane, HP ACLINT/PLIC, mailbox, UART1, and
+SYSCTRL lifecycle signals. The generated CPU Verilog lives only below
+`build/<variant>/generated/vexiiriscv/` and is an external lint boundary. See
+[LP/HP Architecture](../docs/lp-hp-architecture.md).
+
+RTL changes require an affected firmware build and simulation. Use
+`make regress-pr` or `make regress-nightly` for supported regression coverage;
+see [Engineering Workflow](../docs/engineering.md) for results and artifacts.
+
+The [Mini NPU specification](../docs/ip/npu.md) freezes an independent
+64-MAC, 64 KiB accelerator with private AXI64 DMA, APB4 configuration and
+resource-owned interrupts. Its stable Phases 0-6 and
+[verification requirements](../docs/ip/npu-verification.md) govern the RTL,
+compiler, deployment and qualification flows. P0-P5 functionality is retained;
+P6 commands are implemented but only a current-revision aggregate PASS report
+establishes physical and performance qualification.
+
+## Self-Owned RTL Naming
+
+Self-owned SystemVerilog follows these signal and register naming rules. New
+RTL and local changes to existing RTL must preserve them:
+
+- Declare synthesizable data, state, and interconnect signals as `logic`.
+  Reserve explicit net types for signals that require net resolution semantics.
+- Use `_i` and `_o` for module ports, `s_` for internal signals, and `u_` for
+  module instances.
+- Name state owned by the current module `s_<name>_d` for next state and
+  `s_<name>_q` for registered current state. Keep the pair adjacent in the
+  declaration and connect it through a reusable register component from
+  ClusterIP Common.
+- Name a register write enable `s_<name>_en`. Do not add `_d` or `_q` to an
+  ordinary combinational signal or to a parent-module connection simply
+  because its source is registered inside a child module.
+- Use `s_req`, `s_write`, `s_req_accept`, and `s_access_error` for an APB4 slave
+  transaction. Name its registered response signals `s_apb4_ready_d/q`,
+  `s_apb4_rdata_d/q`, and `s_apb4_resp_err_d/q`.
+- Name register offsets `APB4_<IP>_<REGISTER>` and field bit positions
+  `<IP>_<REGISTER>_<FIELD>`. Do not add redundant `_OFFSET`, `_LSB`, `_MASK`,
+  or `_VALUE` suffixes; keep implementation-only masks and constant values as
+  typed `localparam` declarations in the owning module.
+
+Changed owned RTL is also checked for module lower snake case, `u_` instance
+names, port direction suffixes, `_d/_q` state pairs, `_e/_t` typedef suffixes,
+typed UpperCamelCase parameters, and namespaced macros. This staged check does
+not apply mechanically to protocol fields, PDK pins, generated bindings, or
+managed/third-party sources. Use compatibility wrappers for public renames.
+
+Run `verible-verilog-format --flagfile=.verible-format` on changed RTL. Where
+the formatter cannot preserve required macro or port-column alignment, use a
+narrow `// verilog_format: off/on` region and align the enclosed declarations
+manually.
+
+The complete ownership-aware rules, including semantic signal grammar,
+handshake/error vocabulary, module/interface/instance suffixes, parameter and
+macro namespaces, FSM examples, compatibility boundaries, and migration
+policy are documented in [RTL Coding Style](../docs/rtl-coding-style.md).
+The behavior-preserving audit process, rule matrix, formatter-exception
+requirements, and required validation are documented in
+[RTL Coding Style Compliance](../docs/rtl-coding-style-compliance.md);
+[`rtl_style_audit.json`](rtl_style_audit.json) records the reviewed owned
+source inventory.
+`make rtl-style-check` rejects new positional connections and legacy
+constructs in changed self-owned RTL while the existing migration backlog is
+handled separately.
+
+The Verilator harness uses a zero-delay SDRAM protocol model because Verilator
+does not elaborate the tri-state delays in the Micron model. The Icarus
+testbench retains that Micron timing model, so it is the reference for SDRAM
+command timing while Verilator provides fast functional coverage.
+
+The Mini SoC on-chip SRAM is a synthesis-time selectable 4/16/32/64/128 KiB
+native 32-bit AXI4 target. Product profiles select 32 KiB; ICS55 assembles it
+from two 16 KiB `SRAM_4096X32_M8_BW` macros while other mappings retain their
+technology-bank geometry. Its read-only
+APB capability/performance ABI, technology mapping, verification evidence, and
+ECC/MBIST roadmap are documented in
+[Configurable Native-AXI4 On-chip SRAM](../docs/ip/onchip-sram.md).
+
+The self-owned ESP-PSRAM64H controller exposes a 32-bit AXI4 data window and a
+separate APB4 management plane across four independently isolated 8 MiB chips.
+Its frozen architecture, register ABI, timing limits, model, formal target, and
+verification evidence are documented in
+[ESP-PSRAM64H Controller](../docs/ip/psram.md).
+
+The prototype octal PSRAM controller reserves a separate 128 MiB AXI4 window
+and supports boot-selected OPI/xSPI and single-clock HyperBus profiles through
+a shared Basilisk-style digital PHY. Its protocol, CDC, delay-cell,
+register-ABI, DMA, and signoff boundaries are documented in
+[OPI PSRAM and Single-Clock HyperBus Controller](../docs/ip/opipsram.md).
+
+The self-owned SPI-SD host is an APB4-managed, native 32-bit AXI4 SG-DMA
+master with a single-clock mode-0 SDR PHY. Its phase, protocol, register,
+descriptor, software, and verification boundaries are documented in
+[SPI-SD Host Controller](../docs/ip/spisd.md).
+
+The self-owned XPI V2 controller exposes four 64 MiB native-AXI4 windows and
+an APB4 management plane. It provides a 16-by-8 command LUT, reset-time NSS0
+quad-I/O NOR boot, mapped serial RAM access, indirect PIO/central-DMA commands,
+automatic status polling, interrupts, and an SDR single-clock PHY. Its frozen
+ABI and commercial delivery boundary are documented in
+[XPI V2 Controller](../docs/ip/xpi.md).
+
+The self-owned crypto controller provides management-only APB4 control,
+central-DMA streams, AES-128/192/256 ECB/CBC/CTR, SHA-224/256, and raw
+RSA-2048 Montgomery exponentiation. Its register ABI, key/zeroize boundary,
+commercial survey, and verification roadmap are documented in
+[AES/SHA-2/RSA Crypto Controller](../docs/ip/crypto.md).
+
+The Crypto storage refreeze requires six private `tc_sram_1024x32` banks for
+constants, keys, SHA schedule and RSA limb storage, with LP initialization,
+APB V2 discovery and bounded physical scrub/readback. It replaces the old
+one-round-per-cycle AES/SHA contract with bounded microsteps while preserving
+algorithms and engine concurrency. Three small stream FIFOs remain explicit
+inferred-memory exceptions. The P1 source now implements this organization,
+with `crypto_sram_store`, `crypto_mem_ctrl`, a verified scrubber and clearable
+Common FIFO wrappers. AES/SHA/RSA use synchronous SRAM microsteps; V1 ROM
+implementations are verification-only under `tests/rtl/crypto_v1/`.
+CRYPTO-P0/P1/P2 distinguish baseline, implementation and qualification.
+Six-macro block synthesis and focused tests do not establish whole-chip
+timing, physical or release qualification.
+
+The self-owned JPEG controller provides 8-bit Baseline Sequential encode and
+decode, five raster formats, a 64-bit AXI4 2D DMA, direct and 128-byte SG-ring
+jobs, four encoder table contexts, interrupts, and LP/HP transferable resource
+ownership. Its implemented limits, handwritten ABI, measured performance, and
+commercial release gates are documented in
+[Baseline JPEG Codec](../docs/ip/jpeg.md).
+
+The Mini GA2D graphics accelerator has a frozen architecture and ABI. Phase 5
+implements `APB4_GA2D` as a PCLK-controlled, direct single-job private-AXI64
+2D engine with FILL, COPY, bit-exact CONVERT, opaque alpha BLEND, A8 fixed-color
+foreground masks, and exact equal background/destination in-place composition.
+It has ownership-routed IRQ support, snapshots, byte pitches, and byte-edge
+transfers. RGB565, RGB888, XRGB8888, and ARGB8888 are color surfaces; A8 is
+BLEND foreground-only. Transparent-background and premultiplied-alpha modes,
+scaling, rendering, and descriptor/ring/queue submission remain unavailable.
+The earlier LP interrupt platform and native AXI64 fabric expansion retain their
+fixed allocations; no physical/PPA completion is claimed here.
+The exact lifecycle, HAL, and evidence gates are in [GA2D](../docs/ip/ga2d.md).
+
+The Mini Audio Processing Unit has a frozen coreless architecture. APU-P5 adds
+the private AXI4 DMA and scheduler, microcode loader/sequencer, 112 KiB local
+store, primitive FIFOs, and class-2 through class-5 bitstream, entropy, local,
+and fixed-point DSP engines plus production WAV/FLAC microprogram transport to
+the APB4 shell at `APB4_APU`.
+Resource Controller index 7 and exclusive LP IRQ31/HP PLIC source10 routing
+remain fixed. P5 provides direct/ring WAV/FLAC jobs and the TX stream route;
+the source now also contains the independent P7 KWS model/frontend/inference
+path, RX integration and the banked KWS SRAM client. Their acceptance requires
+current-revision evidence, not this source inventory. The complete ABI, phase
+order and evidence gates are defined in
+[Mini Audio Processing Unit](../docs/ip/apu.md).
+
+The P5 capacity refreeze specifies a 4096x64 (32 KiB) control store, 12-bit
+PC/branch paths, APUMC V2 with V1 compatibility, and APB V1.1 PC-high discovery.
+Its eight control-store SRAM wrappers are separate from the unchanged 112 KiB
+data store. This is an implementation requirement: full WAV/FLAC resampling
+and long-Rice coverage plus a complete image fitting 4096 words are still
+required before claiming P5 completion.
+
+P6 MP3 remains deferred; its stable format ID and unsupported trap entry are
+retained, not an enabled third codec. The P9 refreeze requires macro-backed
+coefficient/profile storage and microcode memoization instead of large inferred
+arrays/case ROMs. Its full IHP130 inventory is 76 4 KiB wrappers: the existing
+44 (including proof stack), 17 memo/bitmap and 15 coefficient/profile wrappers.
+The implementation provides LP APUC startup loading, bounded synchronous
+coefficient access, macro-backed proof memoization and additive APB V1.2.
+Release qualification still requires the frozen P9 evidence rather than source
+presence alone.
+The model, fixed-point results, 32/112 KiB advertised capacities and existing
+system clock/reset/IRQ/resource assignments remain fixed. Macro/init/latency
+changes must re-pass P5/P7 functional/concurrency tests and the P9 synthesis
+memory/time/RSS comparison before final P8 physical acceptance.
+
+SystemCtrl uses `sysctrl_if.sv`, `sysctrl_define.svh`, `sysctrl_reg.sv`, and
+`sysctrl_core.sv` behind the stable `apb4_sysctrl` integration wrapper. Its
+generated register offsets, APB4 timing, control-plane behavior, and
+verification contract are documented in
+[APB4 System Control](../docs/ip/sysctrl.md).
+
+The Mini SoC APB4 platform block is `apb4_system` in `rtl/mini/top`. It owns
+archinfo, RTC, watchdog, PWM, PS/2, RNG, CRC, the read-only legacy user-IP
+compatibility window, and fixed EXT-L/EXT-H control windows in product mode.
+The root-only Fabric Monitor is a separate HP-domain APB target reached through
+the generated `apb4_system` route and a PCLK-to-HP async bridge; its counter
+and sticky-fault ABI is documented in
+[Mini Data-Plane Fabric Monitor](../docs/ip/fabric-monitor.md).
+`apb4_periph` remains the APB4 peripheral container. Topology generation
+includes both management-only native SDIO hosts (`sdio0` on GPIO15..20 ALT0
+and `sdio1` on dedicated pads), and the `soc_apb4_system_fabric.svh` include is documented in
+[Mini SoC Topology](mini/integration/README.md).
