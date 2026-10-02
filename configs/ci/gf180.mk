@@ -1,0 +1,17 @@
+SOC               := MINI
+MINI_MODE         := PRODUCT
+PDK               := GF180
+HAVE_PLL          := NO
+HAVE_SRAM_IF      := YES
+HAVE_SRAM_MACRO   := YES
+SRAM_SIZE_KIB     := 32
+HAVE_HP           := YES
+HP_CONFIG         := rv64imafdc_zicbom_max
+HAVE_SVA          := NO
+EXT_CLK_HZ        := 72000000
+AUD_CLK_HZ        := 18432000
+CLINT_TIMEBASE_HZ := 1000000
+ISA               := RV32IM
+HAVE_CSR          := NO
+APP               := bringup
+LINK_TYPE         := ld2_psram
