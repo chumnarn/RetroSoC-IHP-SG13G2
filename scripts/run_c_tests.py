@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""Build and run host tests for deterministic SDK utilities."""
+
+from __future__ import annotations
+
+import argparse
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+
+TEST_SOURCES = (
+    "crt/arch/riscv/libgcc/clzsi2.c",
+    "crt/arch/riscv/libgcc/divdi3.c",
+    "crt/arch/riscv/libgcc/ffssi2.c",
+    "crt/arch/riscv/libgcc/udivdi3.c",
+    "crt/arch/riscv/libgcc/umoddi3.c",
+    "crt/src/lib/printf.c",
+    "crt/src/lib/stdlib.c",
+    "crt/src/lib/string.c",
+    "crt/src/hal/gpio_math.c",
+    "crt/src/hal/i2c_math.c",
+    "crt/src/hal/ws2812_math.c",
+    "crt/src/hal/uart_math.c",
+    "crt/src/hal/timer_math.c",
+    "crt/src/hal/psram_math.c",
+    "crt/src/hal/sdram_math.c",
+    "crt/src/hal/sdio_math.c",
+    "crt/src/hal/usb2_math.c",
+    "crt/src/hal/spisd_math.c",
+    "crt/src/hal/i2s_math.c",
+    "crt/src/hal/dma_math.c",
+    "crt/src/hal/crypto_lifecycle.c",
+    "crt/src/hal/jpeg_math.c",
+    "crt/src/hal/apu.c",
+    "crt/src/hal/ga2d_math.c",
+    "crt/src/hal/ga2d.c",
+    "crt/src/hal/npu.c",
+    "crt/src/hal/fabric_monitor.c",
+    "crt/src/hal/sysctrl.c",
+    "crt/src/hal/clock.c",
+    "crt/src/hal/resource.c",
+    "crt/src/hal/extension.c",
+    "crt/src/hal/user_ip.c",
+    "rtl/managed/clusterip/ps2/sw/src/ps2.c",
+    "rtl/managed/clusterip/ps2/sw/src/ps2_keyboard.c",
+    "rtl/managed/clusterip/ps2/sw/src/ps2_mouse.c",
+    "rtl/managed/clusterip/rtc/sw/src/rtc.c",
+    "app/media/src/video_player.c",
+    "app/media/src/wav_audio.c",
+    "app/benchmark/npu/npu_p6_reference.c",
+    "tests/c/test_runtime.c",
+)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--cc", default="clang")
+    args = parser.parse_args()
+
+    compiler = shutil.which(args.cc)
+    if compiler is None:
+        raise SystemExit(f"host C compiler not found: {args.cc}")
+
+    root = args.root.resolve()
+    with tempfile.TemporaryDirectory(prefix="retrosoc-c-tests-") as temporary_directory:
+        temporary_root = Path(temporary_directory)
+        memory_map_root = temporary_root / "memory_map"
+        user_extensions_root = temporary_root / "user_extensions"
+        subprocess.run(
+            [
+                sys.executable,
+                str(root / "scripts/rtl/generate_memory_map.py"),
+                "--map",
+                str(root / "rtl/mini/address_map/memory_map.json"),
+                "--output-dir",
+                str(memory_map_root),
+            ],
+            check=True,
+        )
+        subprocess.run(
+            [
+                sys.executable,
+                str(root / "rtl/mini/integration/generate_user_extensions.py"),
+                "--map",
+                str(root / "rtl/mini/integration/user_extensions.json"),
+                "--output-dir",
+                str(user_extensions_root),
+            ],
+            check=True,
+        )
+        executable = temporary_root / "runtime_tests"
+        crypto_constants_root = temporary_root / "crypto_constants"
+        subprocess.run([
+            sys.executable, str(root / "scripts/crypto_constants.py"),
+            "--root", str(root), "--output", str(crypto_constants_root),
+        ], check=True)
+        command = [
+            compiler,
+            "-std=c11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-builtin",
+            "-DRS_APU_TEST_MMIO",
+            "-DRS_CRYPTO_TEST_MMIO",
+            "-I",
+            str(crypto_constants_root),
+            "-DRS_GA2D_TEST_MMIO",
+            "-DRS_NPU_TEST_MMIO",
+            "-DRS_FABRIC_MONITOR_TEST_MMIO",
+            "-DRS_RESOURCE_TEST_MMIO",
+            "-I",
+            str(memory_map_root / "include"),
+            "-I",
+            str(user_extensions_root / "include"),
+            "-I",
+            str(root / "rtl/managed/clusterip/ps2/sw/include"),
+            "-I",
+            str(root / "rtl/managed/clusterip/rtc/sw/include"),
+            "-I",
+            str(root / "crt/include"),
+            "-I",
+            str(root / "app/media/include"),
+            "-I",
+            str(root / "app/benchmark/npu"),
+            "-o",
+            str(executable),
+            *(str(root / source) for source in TEST_SOURCES),
+        ]
+        tiny_object = temporary_root / "tiny_dma_math.o"
+        subprocess.run([
+            compiler, "-std=c11", "-Wall", "-Wextra", "-Werror", "-DRS_SOC_TINY",
+            "-Drs_dma_config_validate=rs_tiny_dma_config_validate",
+            "-Drs_dma_tcd_validate=rs_tiny_dma_tcd_validate",
+            "-I", str(memory_map_root / "include"),
+            "-I", str(user_extensions_root / "include"),
+            "-I", str(root / "crt/include"), "-c", str(root / "crt/src/hal/dma_math.c"),
+            "-o", str(tiny_object),
+        ], check=True)
+        command.append(str(tiny_object))
+        subprocess.run(command, check=True)
+        subprocess.run([str(executable)], check=True)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
