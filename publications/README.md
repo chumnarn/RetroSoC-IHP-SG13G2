@@ -1,0 +1,533 @@
+# Publications
+
+This directory owns manually built technical publications. The Mini datasheet is
+an English product document with a separate MPW compatibility appendix. It does
+not define or change RTL, register ABIs, build profiles or hardware quality policy.
+The canonical RTL/configuration inputs remain authoritative.
+
+The current working source includes the Mini RV64/Sv39 migration, V2 workload
+bundle checks, and minimal Linux `/init` handoff. RT-Thread's M-mode BSP and
+acceptance evidence are documented in [HP RV64 validation](../docs/hp-rv64-validation.md).
+These edits do not advance `mini.json.source_revision` or relabel an existing
+PDF. Review and commit the implementation snapshot before producing a matching
+new PDF; the source-drift check remains mandatory.
+
+## Tiny Gen1 datasheet
+
+The independent [Tiny Gen1 publication](datasheets/tiny/README.md) uses the same
+visual language with Tiny-only configuration, register/IRQ/pad extraction,
+fourteen IP chapters and its own source/structure/evidence checks. Run
+`python3 publications/build_tiny_datasheet.py setup`, then `build` or `check`.
+Its output and `latest-tiny` record are separate; the existing Mini entrypoint,
+templates, configuration, review and delivered PDF are unchanged.
+
+## Mini datasheet
+
+The prototype chip brand is **Rill（清溪）**. Its bilingual label replaces the
+visible document ID in the existing cover metadata line; running headers prefix
+the retained document title with `Rill`. The document title/ID remain unchanged
+in identity metadata. Header height and the reserved cover logo area are fixed.
+Noto Sans CJK SC Bold 2.004 is pinned through the media revision for the brand's
+Chinese glyphs; its unmodified font, OFL license, provenance and hashes are stored
+with the other media fonts. This cover round uses `v05-rill-` change markers and
+compares against the retained 779-page presentation edition (PDF SHA-256
+`a69d55cff0e9b8bb4625072ca494f33eec709871d0eb4003403a2ccc0f197c82`).
+
+- Entry: [datasheets/retroSoC-mini-datasheet.typ](datasheets/retroSoC-mini-datasheet.typ).
+- Identity, reviewed hardware commit and reference profiles:
+  [datasheets/mini.json](datasheets/mini.json).
+- Layout, diagrams and chapter content: `datasheets/style.typ`,
+  `datasheets/figures.typ` and `datasheets/sections/`.
+- Layout standard: [datasheets/style.md](datasheets/style.md).
+- IP-to-window/IRQ/source coverage: [datasheets/ip-catalog.json](datasheets/ip-catalog.json).
+- Build and validation: [build_datasheet.py](build_datasheet.py).
+
+The v0.5 DRAFT includes detailed per-IP functional, protocol,
+register/bitfield and software reference chapters. Each actual IP starts on a
+new page; UART/SDIO instances share their common register descriptions.
+CPU ISA/CSR manuals remain outside this publication's scope.
+
+The current 2026-09-22 refresh retains v0.5 DRAFT and binds it to reviewed dev commit
+`c3de7c602a7ca0f0f9ade9d3ffb59339bc34fb8b`. NPU retains its independent chapter
+after APU. The reviewed contract contains 42 IP chapters and 109 frozen entries;
+the nine-category Overview contains 45 labels. Existing register anchors remain
+stable. The main reference stays IHP130 PRODUCT / 32 KiB SRAM, with the dedicated
+`configs/ci/ihp130-apu.mk` configuration identified separately.
+
+The [content review](datasheets/content-review.md) distinguishes already covered
+material, refreshed implementation facts, default-disabled features, and missing
+measurement evidence. APU's checked-in WAV/FLAC image is statically assembled by
+`dev_reference.py`: image availability is separate from corpus qualification.
+The [109-entry chapter review](datasheets/chapter-review.md) records final page
+numbers, implementation status, document completeness, sources and recommendations
+for the delivered PDF snapshot.
+MP3 remains a reserved trap entry. Default PRODUCT keeps KWS gated off; the P9
+acceptance profile advertises capability `0x3FD` and digest `0x63E96066`.
+APU KWS storage includes 15 coefficient and 17 proof-memo macro wrappers in the
+qualified configuration; physical replacement remains evidence-bound. NPU has
+eight executable operator classes, 64 KiB private SRAM and
+an integrated eight-beat AXI64 DMA limit; its reusable DMA default is not the
+deployed limit. Native Linux NPU/ASoC support is not inferred from HP smoke code.
+CI workflow outcomes are a separately scoped snapshot, including failures and
+skipped downstream tests; they do not populate per-IP hardware pass records.
+The preceding emphasis round compared against the retained 779-page PDF with
+SHA-256 `25257e5243e945401c8a214d4043819cf802a7fa2d22b04d83b513ce9075647b`.
+It used `v05-emphasis-` markers for the cover contact, partial Functional mark
+and selected body emphasis. Earlier `v05-refresh-` boot/mailbox, APU, environment
+and navigation corrections remain historical. The version and document date are retained. This presentation is built directly
+from the reviewed current dev checkout; its complete source SHA and timestamped
+CI observations identify the build. Runtime-library/bootstrap increments were
+reviewed separately and do not change the hardware interfaces.
+
+The cover stores the author name and email separately; PDF author metadata keeps
+the name. Artifact marks explicitly support empty, left-half and full states.
+Body emphasis uses selected Inter Bold phrases, including explicit `**...**`
+spans in generated IP text, while code and diagram labels retain their own rules.
+See the [layout/content standard](datasheets/style.md) for exact geometry,
+emphasis scope and validation requirements. Rebuild all page-dependent records
+after typography changes and retain the previous PDF and actual test verdicts.
+
+The full drawing layer uses bytefield 0.0.8, rivet 0.3.1, blockcell 0.1.0 and
+circuiteria 0.2.1. All 42 IP chapters and four system hardware figures use
+source-bound circuits. Binary layouts cover descriptors, boot/microcode bundles,
+serial framing and media/crypto packing. APU's seven current instruction classes
+and 62 operations are grouped by format, operand constraints and tool target.
+Storage figures cover architectural FIFOs, line buffers, packet/table/control
+memory, descriptor examples, address windows, linker/load placement and budgets.
+Overview classification, access matrices, software flows, register bit layouts
+and WaveDrom keep their existing rendering.
+
+Section 2.1.1 contains a compact functional overview drawn independently with locked
+CeTZ 0.5.2. It uses regular 9 pt text for ordinary labels, regular 8 pt text
+inside compact CDC/Gateway cells, and bold 9 pt bus/domain labels. Individually named PRODUCT IP/instance
+rows, external signal groups and explicit Gateway A/B fan-in. AXI32/AXI64
+labels appear only in bus-spine and bridge symbols. Clock-domain backgrounds
+are separate from IP categories. All 46 Circuiteria figures retain their existing
+renderer. The 142 specialized figures include NPU's circuit, three binary layouts
+and two storage figures.
+
+`soc_diagram_reference.py` checks `datasheets/soc-architecture.json`
+against PRODUCT IP coverage, selected RTL clock/interface bindings, gateway
+clients, stream routes, pin groups and alternate-function mappings. Its CeTZ
+renderer is `datasheets/soc-architecture.typ`. The diagram is recorded under
+Introduction; the NPU node is tied to its chapter and HP-domain background.
+`soc_diagram_geometry.py` supplies the exact paths and arrowheads to CeTZ and
+checks orthogonality, visible shafts, symbol avoidance and arrow clearance.
+The arrowheads are 1 x 0.8 mm with at least 1 mm visible shaft and 0.5 mm
+clearance outside stroke envelopes. A 64 mm / 102 mm reference grid, separated
+by 6 mm, places the three-by-three domain key alongside the explanations.
+`soc_diagram_pdf.py` checks final label regions, actual size/weight and routes
+against exported character boxes. FontTools compares embedded Inter outlines
+with the locked 400/700 instances because variable subsets retain Regular names.
+
+`diagram_reference.py` coordinates the circuit, binary, instruction and storage
+adapters. The catalogs under `datasheets/diagram-*.json` record sources and
+primary/shared chapter placement; `diagram-packages.typ` owns their appearance.
+`diagram_coverage.py` records covered/shared/not-applicable categories for all
+109 frozen entries and rejects declared drawings absent from renderer output.
+Instance port directions, selected signal widths, descriptor arrays, FIFO
+parameters and linker regions are checked against their actual definitions.
+Rendering a connected interface or accepted instruction encoding does not remove
+current admission/capability/delivery restrictions.
+
+`package_reference.py` identifies dependencies by name/version, validates each
+cache and walks its runtime imports. CeTZ 0.3.4 and oxifmt 0.2.1 are retained for
+these packages alongside CeTZ 0.5.2 and oxifmt 1.0.0; tidy 0.3.0 is a runtime
+input of circuiteria. Waveforms retain wavy 0.1.3 and jogs 0.2.4.
+Setup uses checksum-locked archives, and build/check require the
+complete local cache. The manifest records version-qualified package digests
+and their runtime import graph. Third-party manual sources are not built.
+
+### Software execution and structure baseline
+
+The draft details generic LP startup/linker initialization, conditional
+exception/IRQ support, OpenSBI/device-tree/kernel/rootfs handoff, and the ordered
+bringup/CI smoke diagnostics. Application result tables retain stage identity
+when numeric codes repeat and distinguish a C return from a TEST_STATUS write.
+Source-level controller self-tests and known-answer checks are described by
+their actual coverage; they are not new hardware pass reports.
+
+`datasheets/system-reference.json.software` holds the reviewed semantic records
+and source bindings. `software_reference.py` derives startup choices, software
+IRQ bounds, platform properties, mailbox publication order and terminal branches.
+The manifest includes their runtime, application, configuration and tool sources.
+
+The [structure contract](datasheets/structure-contract.json) freezes the final
+outlined level-one/two headings and all IP entries, including deeper IP titles,
+their levels, order and stable anchors. Build/check validate the resolved heading
+record; `document-structure.json` is hashed in the manifest. Deeper explanatory
+subsections, content, figures and pagination can change without altering the
+contract. Normal builds never regenerate it. A later explicit structure-change
+task must review the revised contract alongside the document. This publication
+baseline does not change DRAFT status or the repository's RTL maturity policy.
+
+The runtime reference also separates polling budgets from time units and API
+returns from hardware completion. Ten selected helpers retain their reviewed
+zero-budget, partial-transfer and recovery semantics, with source-body bindings.
+The HP boot chapter contains byte-level bundle tables, generator-versus-loader
+rules and a deterministic synthetic serialization example produced by the
+existing packager. The synthetic files are temporary and are not bootable images.
+`api_bundle_reference.py` supplies these records through the existing software
+data layer; `tests/test_publication_api_bundle.py` compares the format and tests
+original C function bodies against memory-backed register substitutes in Linux.
+
+### Current capabilities and historical evidence
+
+`dev_reference.py` reads the configured APU identities and deployed NPU geometry,
+capability, descriptor and burst limits. It rejects live shell-only NPU or blanket
+APU KWS-disabled claims. Declaration/source checks alone do not establish semantic
+completeness, so the content and chapter reviews also record what was retained,
+updated or awaits evidence, with a concrete recommendation.
+
+CI snapshots keep `status` separate from nullable `conclusion`. Queued/in-progress
+runs have no verdict. Retain the complete source SHA, UTC check time, run URL and
+job/step scope. Refresh the snapshot for the document commit before final delivery;
+do not reuse a previous commit's formatting failure or passing outcome. Distinguish
+a failed prerequisite from skipped runtime stages and completed scoped tests.
+Historical GA2D/NPU records remain dated narrative references unless their raw
+artifacts, source, profile and stage can be verified. APU smoke subsets and tests
+that return early without tools/data are not full-corpus or sustained-audio passes.
+Previous local test counts remain historical, not this refresh's validation result.
+Publication tests/builds do not promote RTL maturity or physical qualification.
+
+Source review follows the selected runtime stage through the complete terminal
+sequence. The `HP_LINUX_READY` marker is also used by freestanding acceptance
+payloads; it alone does not prove Linux readiness or completion of the later GA2D
+and cache-clean handoff. Keep mailbox offsets, event purposes, polling units and
+failure/reset ownership consistent in summaries, tables, diagrams and detailed
+prose. Source-binding checks complement this semantic review rather than replace it.
+
+### System-use reference
+
+The same reviewed snapshot also includes configuration/feature availability,
+three typical system compositions, non-coherent buffer/DMA handoff, operating
+states/reset effects, resource ownership, access-control boundaries, debug/fault
+recovery, external-interface constraints, boot/recovery and software support.
+Electrical, thermal, performance and power sections describe required conditions
+and evidence without manufacturing values for uncharacterized hardware. Known
+limitations and revision compatibility are collected before Document Control.
+
+`datasheets/system-reference.json` owns the publication's 42-IP support inventory,
+limitation records and source/test/report references. `system_reference.py`
+checks coverage, unique identifiers, paths and evidence context; the builder
+emits `data.json.system_reference` and hashes these dependencies. Boot-image
+addresses and bounds are extracted from the existing loader header. No hardware
+or software ABI is generated. The source of truth remains the reviewed RTL,
+configuration, HAL, boot loader and Linux platform files.
+
+Implementation, test availability and reviewed successful runs are separate
+states. A Linux device-tree node or bare-metal HAL is not native driver support.
+The supplied initial console uses SBI. The loader's DMA failure path falls back
+to software copy/CRC. Its ready/result/cache waits use bounded polling iterations;
+the initial ready message does not complete the later acceptance and ownership return.
+CRC is not authentication. Power isolation, qualified entropy, physical ratings
+and production APU codec support are not inferred from controller capabilities.
+
+The cross-IP reference additionally covers register access conventions,
+transaction/credit/arbitration rules, DMA request and interrupt routing,
+resource coexistence, clock/divider examples and external-memory compatibility.
+Two usage appendices provide software/buffer budgets and terminology/document
+navigation. `programming_reference.py` collects the corresponding
+`system-reference.json.programming` records, verifies RTL/SDK selector parity
+and connection evidence, extracts interrupt/credit data, and calculates bounded
+timing and buffer examples. The pure timing calculations are cross-checked
+against the existing C helpers by `tests/test_publication_programming.py` in the
+Linux host environment. No MMIO or new firmware/RTL simulation is involved in
+those calculation checks.
+
+The current native JPEG path is connected to master slot 6 with one normal read
+and one normal write credit at class 8. This bounded transport evidence does not
+promote standalone codec tests into an end-to-end SoC DMA result. Existing IP
+register/codec details remain available while system-level qualification remains
+separate.
+
+The implementation-detail layer adds the LP/HP configuration comparison, reset
+initial-state/dependency summary, interface selection/subset matrices, multimedia
+format interoperability and an image-maintenance chapter. Its publication-only
+records live under `system-reference.json.product_details`; the
+`implementation_reference.py` collector validates source/reset bindings and
+extracts explicit LP/HP parameters, PMA envelopes and build flags. The LP firmware
+ISA/CSR choices are kept separate from hardware parameters. Unreviewed upstream
+defaults and cache capacity are not inferred from the HP generator's sets/ways.
+
+The Multimedia overview is outside the actual I2S IP page markers; its label
+ends the preceding IP header scope. All actual IP sections retain independent
+page starts. Interface/format agreement does not remove the existing JPEG or
+APU integration gates. The source-level matrices contain no compliance claims.
+
+Image-maintenance examples only describe the existing SRAM-loader flow.
+`passed=true` with `executed=false` is script preparation, not device programming.
+`tests/test_publication_implementation.py` verifies that distinction with mocked
+tool invocation, along with CPU/reset/capability-source checks. No live debugger,
+erase/program action, new core generation or hardware measurement is performed.
+Board constraint inputs are listed separately from the still-missing approved
+schematic, physical package and matching characterization evidence.
+
+The retrieval appendices add a complete instance-qualified register address index
+and scoped fault/status-code lookup. `retrieval_reference.py` reuses the register
+records and validates publication mappings in `system-reference.json.retrieval`.
+It checks array geometry and all expanded addresses while retaining compact
+formulas in the PDF, separates GPIO windows/MPW selections, and preserves shared
+definition links. Diagnostic enums, masks, field positions, HP boot application
+codes, SDK returns and simulator verdicts keep distinct scopes. Their declarations
+and producing branches are source-checked; they do not imply feature availability.
+
+Release Verification Summary records test entrypoints, applicable profiles/stages,
+matching-report availability and the repository RTL readiness declaration. It does
+not promote readiness or replace missing reports with publication test results.
+Existing physical/electrical chapters specify the identity and evidence fields
+needed before package, PCB, numerical and ordering data can be released.
+
+### Spacing and document flow
+
+The [layout standard](datasheets/style.md) records the implemented page,
+typography, spacing, navigation and diagram rules, including the compact cover
+and current table-caption behavior. Shared spacing lives in the `rhythm`
+configuration in `datasheets/style.typ`; update the standard together with
+intentional layout changes and verify actual spacing in the rendered PDF.
+The publication converter preserves real nested lists and explicit step numbers;
+its regressions are covered by `tests/test_publication_prose.py`.
+
+### Detailed IP reference sources
+
+- `datasheets/register-profiles.json` selects the reviewed RTL, managed IP,
+  register groups and instance geometry. Repeated banks retain their real
+  base/stride/count instead of duplicating every instance.
+- `datasheets/register-annotations.json` supplies reviewed field semantics,
+  access qualifications, conditional reset values and explicit special cases.
+- `register_reference.py` extracts publication data without generating RTL or
+  C definitions. It follows explicit readback packing and selected named
+  producer bindings, applies the annotations, and checks offsets, register/field
+  reset agreement, value ranges and complete non-overlapping 32-bit layouts.
+  Register entries link to RTL and C sources; explicit semantic overrides retain
+  a source pointer and review note.
+- `datasheets/ip-content.json`, `features.json` and `ips/` own the functional
+  chapters. The original grouping and meaningful child sections are retained.
+- `datasheets/overview-groups.json` contains only integrated IP names and
+  functional categories. Its membership is checked against the topology.
+- `datasheets/waveforms.json` contains the WaveDrom examples and per-lane RTL
+  declaration bindings, polarity/meaning, clock scope and behavior review.
+  `waveform_reference.py` validates declaration coverage and selections and
+  generates `waveform-audit.json`; it is a static review aid, not a simulator.
+  `waveforms.typ` runs the pinned wavy renderer through jogs and normalizes SVG
+  typography before embedding the vector result. The package itself is not patched.
+  Representative wait, timeout, backpressure and recovery cases accompany the
+  external-interface examples. Circuit figures separately label selected control,
+  data and clock-domain relationships and retain instance-specific restrictions.
+
+Fixed, conditional and live reset values are distinguished. A dynamic status
+word is not silently assigned a zero reset constant. The expanded P5 source
+snapshot reports APU APB V1.1 and a 32 KiB control store while retaining APUMC
+V1 image compatibility.
+
+The title remains **retroSoC Mini Gen2/Gen2+**. PRODUCT is the main configuration;
+MPW retains its own appendix. No difference between Gen2 and Gen2+ is inferred.
+The reference is `configs/ci/ihp130.mk`, with 32 KiB SRAM. The HP boot example
+uses `configs/ci/ihp130-hp.mk`; legacy selection uses `configs/cluster/mini-mpw.mk`.
+
+## Manual workflow
+
+Use Python 3.10 or newer, Git and **Typst 0.15.1**. PDF checks additionally use
+`pypdf`, `pdfplumber` and `fonttools`, available in the Codex bundled document runtime. The
+build uses Python's standard library and the installed Typst CLI; Python 3.10
+also uses the `tomli` backport already pinned in `requirements/build.txt`.
+
+From the repository root:
+
+```sh
+python publications/build_datasheet.py setup
+python publications/build_datasheet.py build
+python publications/build_datasheet.py check
+```
+
+Validate the displayed SDK call examples with an installed C compiler:
+
+```sh
+python publications/check_examples.py --cc gcc
+```
+
+This generates only build-local reference-profile headers and runs freestanding
+syntax checks. It does not execute the examples or assert hardware validation.
+
+Pass `--typst PATH` to setup/build, or set `TYPST`, if the CLI is not on PATH.
+`setup --update` updates clean managed checkouts to their reviewed lock entries
+and restores modified package caches. It refuses to overwrite dirty repositories.
+Setup obtains the locked media, Common/peripheral and Hazard3 sources used by
+the canonical clock/reset checker. It does not install EDA tools or PDKs.
+
+Normal build/check does not fetch updates. Once setup is complete, building is
+offline. The compiler is invoked with system fonts disabled, only the media font
+directory and the verified package cache. No root Makefile target or automatic
+publication workflow is added.
+
+If the requested baseline is current `dev`, review the complete increment from
+the previous publication SHA, update the source identity and CI observation,
+then build directly in that checkout while preserving unrelated local changes.
+Do not advance the advertised revision merely to silence a snapshot error.
+Use an isolated checkout only when retaining an older reviewed snapshot is
+actually required by the task. Its managed inputs must remain inside that
+checkout, and its path/input hashes belong in the build manifest. Do not bypass
+the source check in either workflow; remove temporary checkouts when requested.
+
+Output goes to `build/datasheet-mini-<YYYY-MM-DD-HH-MM>-<input-hash>/`:
+
+- `retrosoc-mini-gen2-gen2plus-datasheet.pdf`: final document;
+- `data.json`: profile-resolved engineering tables;
+- `manifest.json`: source hashes, reviewed commit, configuration, media commit,
+  font hashes, package hashes, compiler version and PDF digest;
+- `typst.log` and `check-report.json`: compiler and PDF checks.
+- `ip-pages.json`: queried start/end pages used to enforce per-IP page breaks.
+- `layout-regions.json`: renderer-marked continuation-text regions, hashed in
+  the manifest to limit the 8.5 pt continuation-notice exception.
+- `page-roles.json`: the renderer-declared unique closing page, hashed in the
+  manifest. Only this final page omits running headers, footers and printed page
+  numbers; it still contributes to the document's total page count.
+- `waveform-audit.json`: source files/scopes, declaration lines, resolved lane
+  widths and behavior-review qualifications for every waveform.
+- `change-markers.json`: paired layout positions for the current edit's substantive
+  content, explicit cross-references and navigation changes; hashed in the manifest.
+- `document-structure.json`: resolved headings checked against the frozen chapter/IP
+  contract and protected by a manifest digest.
+- `diagram-inventory.json`: every specialized diagram's package, sources, actual
+  page and visual bounds; missing or duplicate renderer uses fail the build.
+- `diagram-coverage.json`: per-entry coverage of the 109 frozen structure records,
+  including shared diagrams, source pointers and explicit not-applicable reasons.
+- `changed-pages.json`: final page-range report, generated after PDF checking with
+  the command below; binds the previous delivered PDF and final PDF digests.
+  Global presentation changes, such as the repository footer on every page, are
+  separate from content and navigation ranges; pagination alone is not a rewrite.
+
+For a content-edit handoff, retain the previous PDF and run:
+
+```sh
+python publications/report_changes.py --baseline build/<previous>/<filename>.pdf --pdf build/<final>/<filename>.pdf
+```
+
+The report checks printed footers and PDF/marker integrity. The closing page is
+identified by its viewer page with null printed-page values and `unprinted`
+numbering; every ordinary page retains the full footer requirement. Review its ranges
+against the rendered content, then include them in the final change summary.
+Subsequent pages whose only differences are pagination or automatic numbering
+are described separately from substantive edits. Maintain the paired markers for
+the current editing round rather than carrying forward stale change claims.
+
+The document date fixes the PDF creation timestamp. Identical inputs produce
+identical PDF bytes; the build-directory timestamp is not printed in the PDF.
+`--output-dir build/<directory>` selects a build-local destination for iteration.
+`check --pdf build/<directory>/<filename>.pdf` checks a specific manifest-backed
+PDF; otherwise it checks the last build. `check --source-only` checks inputs and
+coverage without requiring the PDF inspection libraries, after setup.
+
+## Source and asset ownership
+
+The ignored `publications/media/` checkout is the independent
+[retroSoC/media](https://github.com/retroSoC/media) repository. Fonts, licenses and
+static image assets belong there. Current engineering diagrams are editable
+Typst/CeTZ source here; they are emitted as vector drawing operators in the PDF.
+The three original SVGs are archived byte-for-byte in media and are not used as
+current architecture diagrams. Do not reintroduce copies beside the Typst files.
+
+[The shared dependency lock](../dependencies/dependencies.lock.json) pins media,
+all eleven runtime package name/version pairs documented above, and the required
+local Typst version.
+Media's `.gitattributes` prevents platform line-ending conversion of hashed
+assets. Every file listed in media's `assets.json` is checked before building.
+Typst package extraction uses the shared safe archive helper and a file-hash
+manifest. Packages are confined to `.cache/retrosoc/publications/`.
+
+To change assets, edit and review the media repository, regenerate its hash
+inventory, commit/push there, then update only `publication_media.revision` in
+the main lock. A normal build never commits, pushes, or changes asset revisions.
+
+## Updating technical content
+
+Follow [CONTRIBUTING.md](../CONTRIBUTING.md) and the
+[Git workflow](../docs/git-workflow.md) when preparing publication contributions.
+Ordinary PRs target `dev` and default to merge commits; preserve unrelated history
+and use the repository PR template. These are maintenance instructions, not a
+product chapter.
+
+1. Review the current dev RTL and committed configurations; set the complete
+   reviewed SHA in `mini.json` and record the UTC source/CI observation time.
+   Recheck dev before handoff and review any subsequent delta before advancing
+   the snapshot. The builder rejects changed technical sources
+   relative to this snapshot, including uncommitted tracked changes.
+2. Assess every frozen chapter: retain adequate content, correct stale facts and
+   record specific source/specification or evidence gaps. Reconcile Features,
+   summaries, tables, detailed prose, diagrams and examples for the same fact.
+   Update explanatory prose and `ip-catalog.json` only as needed. Every allocated region,
+   including reserved ranges, and every LP IRQ must have exactly one owner in
+   the publication catalog. Keep still-integrated IPs and their child headings.
+3. Address, LP IRQ, GPIO, pad and access-policy data come from existing canonical
+   generators. SRAM uses the selected profile size, not the JSON maximum.
+4. Review RTL when an architecture document disagrees. Current important cases:
+   JPEG occupies AXI64 slot 6; APU advertises WAV/FLAC job/transport infrastructure
+   while MP3 remains unsupported and KWS requires the P7 configuration; full production qualification is not established. Managed-IP links use their locked
+   upstream commits, not nonexistent main-repository blob paths.
+5. Record official commercial reference identity, version, release/check dates
+   and the organization adopted in the content review. Keep release-specific
+   source/baseline/marker decisions there and long-lived maintenance rules in
+   `datasheets/style.md`. Do not borrow device specifications or qualification.
+6. Compile, check, render all pages and inspect 100% scale and grayscale. Verify
+   the existing document-map links and current-round change ranges against the
+   previous delivered PDF. Report current checks with their actual scope and
+   outcomes; do not reuse prior test totals as a current pass.
+
+### Deliberately unfilled specifications
+
+| Topic | Missing evidence |
+| --- | --- |
+| Package and pin numbering | Approved outline, physical pin/pad mapping, pin 1 and thermal pad |
+| Electrical and clock ratings | PDK/corners, supply and threshold limits, PLL jitter, load conditions |
+| Power, frequency and area | Exact workload/configuration and reproducible measured/signoff reports |
+| PCB and external interfaces | Approved schematic, banks, external devices and board timing |
+| Assembly and ordering | Supplier reflow/MSL data, part numbers, grades and availability |
+| Linux and APU | Native driver/boot/performance qualification beyond the source-level support matrix, and remaining codec/KWS delivery |
+| Silicon and roadmap | Identified lot/revision, measurement setup and reviewed release milestones |
+
+TBD never means zero. The legacy 196 MHz, QFN128 dimensions, PicoRV32/TIM2/
+ONEWIRE/GA feature claims and Lorem ipsum are not carried forward as product
+specifications. CRC remains under the preserved integrity/security grouping,
+with an explicit statement that CRC is not encryption.
+
+## Validation boundary
+
+```sh
+python scripts/dependency_lock.py --lock dependencies/dependencies.lock.json
+ruff check .
+python -m pytest -q
+python publications/build_datasheet.py check
+git diff --check
+```
+
+The focused exporter tests are `tests/test_publications.py` and
+`tests/test_publication_registers.py`; `tests/test_publication_system.py` covers
+support/evidence metadata and boot-layout extraction. Existing memory,
+topology and pin-map tests cover the reused canonical validators. PDF checks
+verify snapshot freshness, metadata, embedded fonts, bookmarks, navigable links,
+minimum 9 pt text (8.5 pt inside marked continuation notices and 8 pt only in
+the approved SoC CDC/Gateway cells), page-bound
+text, per-IP starts and presence of every generated pad/window.
+Quarter-turn labels use their rendered font-height axis: PDFMiner reports glyph
+advance as `size` for rotated text, so the checker measures the rotated bounding
+width instead. The minimum remains 9 pt outside the explicitly marked exceptions.
+They complement manual inspection of diagram meaning, continued headers,
+footnotes, page balance and grayscale readability.
+
+`tests/test_publication_diagrams.py` and `tests/test_publication_full_diagrams.py`
+cover field/source drift, all instruction families, C descriptor layouts, actual
+storage geometry, named instance ports, chapter coverage and renderer completeness.
+Ordinary-page footers display the complete clickable repository URL; the unique
+unnumbered closing page has its own body link and no running furniture.
+`tests/test_publication_closing.py` checks that this exception cannot hide a
+missing ordinary footer, duplicate/non-final page role or modified role record.
+Contents bolds only
+level-one chapter numbers/titles, leaving leaders/page numbers and flat lists regular.
+
+No RTL/HAL change is made by this publication flow. Simulation, synthesis,
+CDC/RDC and physical/silicon signoff remain hardware validation tasks and are
+not implied by a successful PDF build.
+
+Layout references: [ESP32-P4 datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-p4_datasheet_en.pdf),
+[STM32H743 datasheet](https://www.st.com/resource/en/datasheet/stm32h743vi.pdf),
+and [CeTZ documentation](https://typst.app/universe/package/cetz/).
